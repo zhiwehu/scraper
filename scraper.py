@@ -10,7 +10,11 @@ import gdata.youtube.service
 youtube_api = gdata.youtube.service.YouTubeService()
 
 import facebook
-facebook_api = facebook.GraphAPI()
+try:
+    access_token = facebook.get_app_access_token('193618104088301', '659217362b250bbdae0b61d1e437e8ca')
+except:
+    access_token = None
+facebook_api = facebook.GraphAPI(access_token)
 
 def check_url(url, netloc):
     return url and urlparse(url).netloc == netloc
@@ -58,8 +62,10 @@ def fb_scrape(url):
     if facebook_data:
         data['likes'] = facebook_data.get('likes')
         data['talking_about_count'] = facebook_data.get('talking_about_count')
-        # TODO
-        data['checkins'] = 0
+        if facebook_data.get('user_checkins'):
+            data['checkins'] = facebook_data.get('user_checkins')
+        else:
+            data['checkins'] = 0
     return data
 
 def tw_scrape(url):
