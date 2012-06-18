@@ -1,0 +1,4 @@
+python-twitter
+gdata
+facebook-sdk
+bottle
