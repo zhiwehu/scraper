@@ -13,7 +13,7 @@ import facebook
 facebook_api = facebook.GraphAPI()
 
 def check_url(url, netloc):
-    return urlparse(url).netloc == netloc
+    return url and urlparse(url).netloc == netloc
 
 def get_facebook_id(url):
     facebook_url = urlparse(url)
@@ -47,43 +47,45 @@ def get_youtube_id(url):
     return result
 
 def fb_scrape(url):
+    data = {'likes': 0, 'talking_about_count': 0, 'checkins': 0}
+    facebook_data = None
     if check_url(url, 'www.facebook.com'):
         facebook_id = get_facebook_id(url)
         try:
             facebook_data = facebook_api.request(facebook_id)
-            return facebook_data.get('likes'), facebook_data.get('talking_about_count'), 0
         except Exception as e:
-            return 0, 0, 0
-    else:
-        return 0, 0, 0
+            pass
+    if facebook_data:
+        data['likes'] = facebook_data.get('likes')
+        data['talking_about_count'] = facebook_data.get('talking_about_count')
+        # TODO
+        data['checkins'] = 0
+    return data
 
 def tw_scrape(url):
+    data = {'followers_count': 0, 'statuses_count': 0}
+    twitter_data = None
     if check_url(url, 'twitter.com'):
         twitter_id = get_twitter_id(url)
         try:
             twitter_data = twitter_api.GetUser(twitter_id)
-            return twitter_data.statuses_count, twitter_data.followers_count
-        except :
-            return 0, 0
-    else:
-        return 0, 0
+        except Exception as e:
+            pass
+    if twitter_data:
+        data['followers_count'] = twitter_data.followers_count
+        data['statuses_count'] = twitter_data.statuses_count
+    return data
 
 def yt_scrape(url):
+    data = {'view_count': 0, 'subscriber_count': 0}
+    youtube_data = None
     if check_url(url, 'www.youtube.com'):
         youtube_id = get_youtube_id(url)
         try:
             youtube_data = youtube_api.GetYouTubeUserEntry(username=youtube_id)
-            return youtube_data.statistics.view_count, youtube_data.statistics.subscriber_count
-        except :
-            return 0, 0
-    else:
-        return 0, 0
-
-if __name__ == '__main__':
-    print tw_scrape('https://twitter.com/GM/')
-    print tw_scrape('https://twitter.com/Citibank/')
-    print yt_scrape('http://www.youtube.com/user/walmart')
-    print yt_scrape('http://www.youtube.com/user/McKessonCorporation')
-    print fb_scrape('http://www.facebook.com/pages/Houston-TX/ConocoPhillips/173793155340?ref=ts')
-    print fb_scrape('http://www.facebook.com/walmart')
-    print fb_scrape('http://www.facebook.com/pages/Berkshire-Hathaway/112244468787782')
+        except Exception as e:
+            pass
+    if youtube_data:
+        data['view_count'] = youtube_data.statistics.view_count
+        data['subscriber_count'] = youtube_data.statistics.subscriber_count
+    return data
