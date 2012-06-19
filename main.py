@@ -14,6 +14,21 @@ log = logging.getLogger('log.txt')
 
 class CompanyURL(object):
     def __init__(self, company_name, fb_url, tw_url, yt_url):
+        """
+            Init method for CompanyUrl object
+
+            @type company_name: string
+            @param company_name: company name
+            @type fb_url: string
+            @param fb_url: facebook url
+            @type tw_url: string
+            @param tw_url: twitter url
+            @type yt_url: string
+            @param yt_url: youtube url
+
+            @rtype:  None
+            @return: None
+        """
         self.company_name = company_name
         self.fb_url = fb_url
         self.tw_url = tw_url
@@ -30,6 +45,31 @@ class CompanySocialMedia(object):
                  yt_subscriber_count=None,
                  yt_view_count=None,
                  time_taken=datetime.now()):
+        """
+            Init method for CompanySocialMedia object
+
+            @type company_name: string
+            @param company_name: company name
+            @type fb_likes: int
+            @param fb_likes: facebook like count
+            @type fb_talking_about_count: int
+            @param fb_talking_about_count: facebook talking about count
+            @type fb_chickins: int
+            @param fb_chickins: facebook checkins
+            @type tw_followers_count: int
+            @param tw_followers_count: twitter followers count
+            @type tw_tweets: int
+            @param tw_tweets: twitter tweets
+            @type yt_subscriber_count: int
+            @param yt_subscriber_count: youtube subscriber count
+            @type yt_view_count: int
+            @param yt_view_count: youtube view count
+            @type time_taken: datetime.datetime
+            @param time_taken: time taken
+
+            @rtype:  None
+            @return: None
+        """
         self.company_name = company_name
         self.fb_likes = fb_likes
         self.fb_talking_about_count = fb_talking_about_count
@@ -41,6 +81,15 @@ class CompanySocialMedia(object):
         self.time_taken = time_taken
 
 def read_csv(file):
+    """
+        Read csv into list
+
+        @type file: file
+        @param file: the read file
+
+        @rtype: list
+        @return: the CompanyURL object list
+    """
     if not file:
         raise Exception('The file is none.')
 
@@ -53,6 +102,7 @@ def read_csv(file):
             fb_url = row[1].strip()
             tw_url = row[2].strip()
             yt_url = row[3].strip()
+            # If no urls, ignore this row
             if urlparse(fb_url).netloc == '' and urlparse(tw_url).netloc == '' and urlparse(yt_url).netloc == '':
                 continue
             company = CompanyURL(company_name, fb_url, tw_url, yt_url)
@@ -62,13 +112,23 @@ def read_csv(file):
     return company_list
 
 def get_social_media(company_list):
+    """
+        Call scraper to get company social media data
+
+        @type company_list: list
+        @param company_list: the CompanyURL object list
+
+        @rtype: list
+        @return: the CompanySocialMedia object list
+    """
     # Define a progress bar on console
     limit = len(company_list)
     prog = ProgressBar(0, limit, 70, mode='fixed')
     oldprog = str(prog)
+    i = 0
 
     result = []
-    i = 0
+    current_datetime = datetime.now()
     for company in company_list:
         company_sm_data = CompanySocialMedia(company.company_name)
         fb_data = scraper.fb_scrape(company.fb_url)
@@ -81,6 +141,8 @@ def get_social_media(company_list):
         company_sm_data.tw_tweets = tw_data['tweets']
         company_sm_data.yt_subscriber_count = yt_data['subscriber_count']
         company_sm_data.yt_view_count = yt_data['view_count']
+        # Keep same time_taken for this batch operation
+        company_sm_data.time_taken = current_datetime
         result.append(company_sm_data)
 
         # Print a progress bar on console
@@ -94,6 +156,15 @@ def get_social_media(company_list):
     return result
 
 def write_db(company_list):
+    """
+        write CompanySocialMedia object list into sqlite3 database
+
+        @type company_list: list
+        @param company_list: the CompanySocialMedia object list
+
+        @rtype: int
+        @return: insert total count
+    """
     conn = sqlite3.connect('data.db')
     c = conn.cursor()
     # Create table
