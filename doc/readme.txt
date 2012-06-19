@@ -9,7 +9,7 @@ $ cd scraper
 3. Build virtualenv
 $ python virtualenv.py env
 $ source env/bin/activate
-$ (env) pip install -r doc/requirement.txt
+(env) $ pip install -r doc/requirement.txt
 
 4. Test
 $ (env) python test.py
