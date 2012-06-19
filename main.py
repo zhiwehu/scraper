@@ -3,11 +3,14 @@ __author__ = 'zhiwehu'
 import sys
 import csv
 import sqlite3
+import logging
 from urlparse import urlparse
 from datetime import datetime
 
 import scraper
 from progress_bar import ProgressBar
+
+log = logging.getLogger('log.txt')
 
 class CompanyURL(object):
     def __init__(self, company_name, fb_url, tw_url, yt_url):
@@ -36,7 +39,6 @@ class CompanySocialMedia(object):
         self.yt_subscriber_count = yt_subscriber_count
         self.yt_view_count = yt_view_count
         self.time_taken = time_taken
-
 
 def read_csv(file):
     if not file:
@@ -123,8 +125,9 @@ def write_db(company_list):
                  company.time_taken
                     ))
             count += 1
-        except :
-            pass
+        except Exception as e:
+            log.error(e)
+
     conn.commit()
     c.close()
     conn.close()

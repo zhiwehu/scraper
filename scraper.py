@@ -2,6 +2,9 @@ __author__ = 'zhiwehu'
 
 from urlparse import urlparse
 import re
+import logging
+
+log = logging.getLogger('log.txt')
 
 import twitter
 twitter_api = twitter.Api()
@@ -12,7 +15,8 @@ youtube_api = gdata.youtube.service.YouTubeService()
 import facebook
 try:
     access_token = facebook.get_app_access_token('193618104088301', '659217362b250bbdae0b61d1e437e8ca')
-except:
+except Exception as e:
+    log.error(e)
     access_token = None
 facebook_api = facebook.GraphAPI(access_token)
 
@@ -90,6 +94,7 @@ def fb_scrape(url):
         try:
             facebook_data = facebook_api.request(facebook_id)
         except Exception as e:
+            log.error(e)
             pass
     if facebook_data:
         data['likes'] = facebook_data.get('likes')
@@ -117,6 +122,7 @@ def tw_scrape(url):
         try:
             twitter_data = twitter_api.GetUser(twitter_id)
         except Exception as e:
+            log.error(e)
             pass
     if twitter_data:
         data['followers_count'] = twitter_data.followers_count
@@ -140,6 +146,7 @@ def yt_scrape(url):
         try:
             youtube_data = youtube_api.GetYouTubeUserEntry(username=youtube_id)
         except Exception as e:
+            log.error(e)
             pass
     if youtube_data:
         data['view_count'] = int(youtube_data.statistics.view_count)
