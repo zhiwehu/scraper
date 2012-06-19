@@ -10,7 +10,14 @@ from datetime import datetime
 import scraper
 from progress_bar import ProgressBar
 
-log = logging.getLogger('log.txt')
+log = logging.getLogger('scraper')
+log.setLevel(logging.DEBUG)
+if not len(log.handlers):
+    handler = logging.FileHandler(filename='log.txt')
+    handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(fmt='%(asctime)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    handler.setFormatter(formatter)
+    log.addHandler(handler)
 
 class CompanyURL(object):
     def __init__(self, company_name, fb_url, tw_url, yt_url):
@@ -210,6 +217,7 @@ if __name__ == '__main__':
     if len(args) >= 2:
         file = open(args[1], 'r')
         count = write_db(get_social_media(read_csv(file)))
+        print '\n'
         print '%d records has been saved to database %s' % (count, 'data.db')
     else:
         print 'Please input the file name as the first parameter.'
