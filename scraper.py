@@ -44,11 +44,7 @@ def get_twitter_id(url):
 
 def get_youtube_id(url):
     youtube_url = urlparse(url)
-    if youtube_url.path:
-        result = youtube_url.path.replace('/user/', '').replace('/', '')
-    else:
-        result = ''
-    return result
+    return youtube_url.path.replace('/user/', '').replace('/', '')
 
 def fb_scrape(url):
     data = {'likes': 0, 'talking_about_count': 0, 'checkins': 0}
@@ -62,14 +58,14 @@ def fb_scrape(url):
     if facebook_data:
         data['likes'] = facebook_data.get('likes')
         data['talking_about_count'] = facebook_data.get('talking_about_count')
-        if facebook_data.get('user_checkins'):
-            data['checkins'] = facebook_data.get('user_checkins')
+        if facebook_data.get('checkins'):
+            data['checkins'] = facebook_data.get('checkins')
         else:
             data['checkins'] = 0
     return data
 
 def tw_scrape(url):
-    data = {'followers_count': 0, 'statuses_count': 0}
+    data = {'followers_count': 0, 'tweets': 0}
     twitter_data = None
     if check_url(url, 'twitter.com'):
         twitter_id = get_twitter_id(url)
@@ -79,7 +75,7 @@ def tw_scrape(url):
             pass
     if twitter_data:
         data['followers_count'] = twitter_data.followers_count
-        data['statuses_count'] = twitter_data.statuses_count
+        data['tweets'] = twitter_data.statuses_count
     return data
 
 def yt_scrape(url):
@@ -92,6 +88,6 @@ def yt_scrape(url):
         except Exception as e:
             pass
     if youtube_data:
-        data['view_count'] = youtube_data.statistics.view_count
-        data['subscriber_count'] = youtube_data.statistics.subscriber_count
+        data['view_count'] = int(youtube_data.statistics.view_count)
+        data['subscriber_count'] = int(youtube_data.statistics.subscriber_count)
     return data
