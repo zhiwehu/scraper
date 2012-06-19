@@ -1,13 +1,13 @@
 == Installation ==
 1. Instal the virtualenv
-TBD
+If you can not use the system virtualenv, please use the virtualenv.py in this directory.
 
 2. Make a "scraper" directory and copy the code to this directory.
 $ mkdir scraper
 $ cd scraper
 
 3. Build virtualenv
-$ virtualenv env
+$ python virtualenv.py env
 $ source env/bin/activate
 $ (env) pip install -r doc/requirement.txt
 
