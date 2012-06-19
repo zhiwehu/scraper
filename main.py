@@ -35,16 +35,6 @@ class CompanySocialMedia(object):
         self.yt_view_count = yt_view_count
         self.time_taken = time_taken
 
-    def __str__(self):
-        time_taken_str = self.time_taken.strftime('%m/%d/%Y %H:%M')
-        return '%s, %d, %d, %d, %d, %d, %d, %d, %s' % (
-        self.company_name, self.fb_likes, self.fb_talking_about_count, self.fb_chickins, self.tw_followers_count,
-        self.tw_tweets, self.yt_subscriber_count, self.yt_view_count, time_taken_str)
-
-    def __unicode__(self):
-        return self.__str__()
-
-
 def read_csv(file):
     if not file:
         raise Exception('The file is none.')
