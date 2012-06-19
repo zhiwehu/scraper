@@ -21,6 +21,9 @@ Should be print message like below:
 5. Run
 $ (env) python main.py path/input/csv_file.csv
 Should be print message as below:
+    [ #################################################################### ] 100%
+
+    24 records has been saved to database data.db
 
 The result will write to data.db (sqlite3)
 Check if have error in log.txt
