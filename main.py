@@ -205,6 +205,7 @@ def write_db(company_list):
     return count
 
 if __name__ == '__main__':
+    log.info('begin')
     args = sys.argv
     if len(args) >= 2:
         file = open(args[1], 'r')
@@ -212,3 +213,4 @@ if __name__ == '__main__':
         print '%d records has been saved to database %s' % (count, 'data.db')
     else:
         print 'Please input the file name as the first parameter.'
+    log.info('end')
