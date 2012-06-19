@@ -1,10 +1,13 @@
 __author__ = 'zhiwehu'
 
+import sys
 import csv
+import sqlite3
 from urlparse import urlparse
 from datetime import datetime
 
 import scraper
+from progress_bar import ProgressBar
 
 class CompanyURL(object):
     def __init__(self, company_name, fb_url, tw_url, yt_url):
@@ -12,7 +15,6 @@ class CompanyURL(object):
         self.fb_url = fb_url
         self.tw_url = tw_url
         self.yt_url = yt_url
-
 
 class CompanySocialMedia(object):
     def __init__(self,
@@ -35,6 +37,7 @@ class CompanySocialMedia(object):
         self.yt_view_count = yt_view_count
         self.time_taken = time_taken
 
+
 def read_csv(file):
     if not file:
         raise Exception('The file is none.')
@@ -56,9 +59,14 @@ def read_csv(file):
     file.close()
     return company_list
 
-
 def get_social_media(company_list):
+    # Define a progress bar on console
+    limit = len(company_list)
+    prog = ProgressBar(0, limit, 70, mode='fixed')
+    oldprog = str(prog)
+
     result = []
+    i = 0
     for company in company_list:
         company_sm_data = CompanySocialMedia(company.company_name)
         fb_data = scraper.fb_scrape(company.fb_url)
@@ -73,4 +81,60 @@ def get_social_media(company_list):
         company_sm_data.yt_view_count = yt_data['view_count']
         result.append(company_sm_data)
 
+        # Print a progress bar on console
+        i += 1
+        prog.update_amount(i)
+        if oldprog != str(prog):
+            print str(prog), '\r',
+            sys.stdout.flush()
+            oldprog=str(prog)
+
     return result
+
+def write_db(company_list):
+    conn = sqlite3.connect('data.db')
+    c = conn.cursor()
+    # Create table
+    c.execute('''CREATE TABLE IF NOT EXISTS COMPANY
+             (
+             COMPANY_NAME TEXT,
+             FB_LIKES INTEGER,
+             FB_TALKING_ABOUT_COUNT INTEGER,
+             FB_CHICKINS INTEGER,
+             TW_FOLLOWERS_COUNT INTEGER,
+             TW_TWEETS INTEGER,
+             YT_SUBSCRIBER_COUNT INTEGER,
+             YT_VIEW_COUNT INTEGER,
+             TIME_TAKEN TIMESTAMP
+             )''')
+    count = 0
+    for company in company_list:
+        # Insert a row of data
+        try:
+            c.execute("INSERT INTO COMPANY VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (company.company_name,
+                 company.fb_likes,
+                 company.fb_talking_about_count,
+                 company.fb_chickins,
+                 company.tw_followers_count,
+                 company.tw_tweets,
+                 company.yt_subscriber_count,
+                 company.yt_view_count,
+                 company.time_taken
+                    ))
+            count += 1
+        except :
+            pass
+    conn.commit()
+    c.close()
+    conn.close()
+    return count
+
+if __name__ == '__main__':
+    args = sys.argv
+    if len(args) >= 2:
+        file = open(args[1], 'r')
+        count = write_db(get_social_media(read_csv(file)))
+        print '%d records has been saved to database %s' % (count, 'data.db')
+    else:
+        print 'Please input the file name as the first parameter.'

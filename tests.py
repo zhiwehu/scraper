@@ -12,110 +12,126 @@ class ScraperTest(unittest.TestCase):
         pass
 
     def testFacebook(self):
+        # Test None url
         url=None
         data = scraper.fb_scrape(url)
         self.assertEqual(0, data['likes'])
         self.assertEqual(0, data['talking_about_count'])
         self.assertEqual(0, data['checkins'])
 
+        # Test empty url
         url=''
         data = scraper.fb_scrape(url)
         self.assertEqual(0, data['likes'])
         self.assertEqual(0, data['talking_about_count'])
         self.assertEqual(0, data['checkins'])
 
+        # Test 0 url
         url='0'
         data = scraper.fb_scrape(url)
         self.assertEqual(0, data['likes'])
         self.assertEqual(0, data['talking_about_count'])
         self.assertEqual(0, data['checkins'])
 
+        # Test facebook id with parameters
         url='http://www.facebook.com/pages/173793155340?ref=ts'
         data = scraper.fb_scrape(url)
         self.assertEqual(0, data['likes'])
         self.assertEqual(0, data['talking_about_count'])
         self.assertEqual(0, data['checkins'])
 
-        url='http://www.facebook.com/ATT'
+        # Test facebook name
+        url='http://www.facebook.com/ConocoPhillips'
         data = scraper.fb_scrape(url)
         self.assertTrue(data['likes'] > 0)
         self.assertTrue(data['talking_about_count'] > 0)
-        # TODO >= should be change >
-        self.assertTrue(data['checkins'] >= 0)
+        self.assertTrue(data['checkins'] > 0)
 
+        # Test facebook id
         url='http://www.facebook.com/pages/Exxon-Mobil/103179436431279'
         data = scraper.fb_scrape(url)
         self.assertTrue(data['likes'] > 0)
         self.assertTrue(data['talking_about_count'] > 0)
-        # TODO >= should be change >
         self.assertTrue(data['checkins'] >= 0)
 
+        # Test facebook id with parameters again
         url='http://www.facebook.com/pages/Houston-TX/ConocoPhillips/173793155340?ref=ts'
         data = scraper.fb_scrape(url)
         self.assertTrue(data['likes'] > 0)
         self.assertTrue(data['talking_about_count'] > 0)
-        # TODO >= should be change >
         self.assertTrue(data['checkins'] >= 0)
 
     def testTwitter(self):
+        # Test None url
         url=None
         data = scraper.tw_scrape(url)
         self.assertEqual(0, data['followers_count'])
         self.assertEqual(0, data['tweets'])
 
+        # Test empty url
         url=''
         data = scraper.tw_scrape(url)
         self.assertEqual(0, data['followers_count'])
         self.assertEqual(0, data['tweets'])
 
+        # Test 0 url
         url='0'
         data = scraper.tw_scrape(url)
         self.assertEqual(0, data['followers_count'])
         self.assertEqual(0, data['tweets'])
 
+        # Test twitter id
         url='http://twitter.com/WalmartSpecials'
         data = scraper.tw_scrape(url)
         self.assertTrue(data['followers_count'] > 0)
         self.assertTrue(data['tweets'] > 0)
 
+        # Test another format url
         url='https://twitter.com/#!/ExxonMobil_EU'
         data = scraper.tw_scrape(url)
         self.assertTrue(data['followers_count'] > 0)
         self.assertTrue(data['tweets'] > 0)
 
     def testYoutube(self):
+        # Test None url
         url=None
         data = scraper.yt_scrape(url)
         self.assertEqual(0, data['view_count'])
         self.assertEqual(0, data['subscriber_count'])
 
+        # Test empty url
         url=''
         data = scraper.yt_scrape(url)
         self.assertEqual(0, data['view_count'])
         self.assertEqual(0, data['subscriber_count'])
 
+        # Test 0 url
         url='0'
         data = scraper.yt_scrape(url)
         self.assertEqual(0, data['view_count'])
         self.assertEqual(0, data['subscriber_count'])
 
+        # Test youtube id
         url='http://www.youtube.com/user/Gereports'
         data = scraper.yt_scrape(url)
         self.assertTrue(data['view_count'] > 0)
         self.assertTrue(data['subscriber_count'] > 0)
 
+        # Test another format url
         url='https://www.youtube.com/citi'
         data = scraper.yt_scrape(url)
         self.assertTrue(data['view_count'] > 0)
         self.assertTrue(data['subscriber_count'] > 0)
 
-    def testReadCSV(self):
+    def testMain(self):
+        # Test None file
         file = None
         try:
             main.read_csv(file)
         except Exception as e:
             self.assertEqual('The file is none.', e.message)
 
+        # Test good format csv
         file = open('good_format.csv', 'rb')
         company_list = main.read_csv(file)
         self.assertTrue(len(company_list) > 0)
@@ -124,11 +140,15 @@ class ScraperTest(unittest.TestCase):
         c = list[0]
         self.assertTrue('Wal-Mart Stores', c.company_name)
 
+        # Test error format csv
         try:
             file = open('error_format.csv', 'rb')
             main.read_csv(file)
         except Exception as e:
             self.assertTrue(e)
+
+        # Test write db
+        main.write_db(list)
 
 if __name__ == '__main__':
     unittest.main()

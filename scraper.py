@@ -20,6 +20,15 @@ def check_url(url, netloc):
     return url and urlparse(url).netloc == netloc
 
 def get_facebook_id(url):
+    """
+        Get facebook id or name from the url
+
+        @type url: string
+        @param url: facebook url
+
+        @rtype:  string
+        @return: facebook id or name
+    """
     facebook_url = urlparse(url)
     path = facebook_url.path
     if path.startswith('/pages/'):
@@ -33,6 +42,15 @@ def get_facebook_id(url):
         return path.replace('/', '')
 
 def get_twitter_id(url):
+    """
+        Get twitter id from the url
+
+        @type url: string
+        @param url: twitter url
+
+        @rtype:  string
+        @return: twitter id
+    """
     twitter_url = urlparse(url)
     if twitter_url.fragment:
         result = twitter_url.fragment.replace('!', '').replace('/', '')
@@ -43,10 +61,28 @@ def get_twitter_id(url):
     return result
 
 def get_youtube_id(url):
+    """
+        Get youtube id from the url
+
+        @type url: string
+        @param url: youtube url
+
+        @rtype:  string
+        @return: youtube id
+    """
     youtube_url = urlparse(url)
     return youtube_url.path.replace('/user/', '').replace('/', '')
 
 def fb_scrape(url):
+    """
+        Scripe facebook url, get likes, talking_about_count and checkins
+
+        @type url: string
+        @param url: facebook url
+
+        @rtype:  dict
+        @return: likes, talking_about_count and checkins dict data
+    """
     data = {'likes': 0, 'talking_about_count': 0, 'checkins': 0}
     facebook_data = None
     if check_url(url, 'www.facebook.com'):
@@ -65,6 +101,15 @@ def fb_scrape(url):
     return data
 
 def tw_scrape(url):
+    """
+        Scripe twitter url, get followers_count, tweets
+
+        @type url: string
+        @param url: twitter url
+
+        @rtype:  dict
+        @return: followers_count, tweets dict data
+    """
     data = {'followers_count': 0, 'tweets': 0}
     twitter_data = None
     if check_url(url, 'twitter.com'):
@@ -79,6 +124,15 @@ def tw_scrape(url):
     return data
 
 def yt_scrape(url):
+    """
+        Scripe youtube url, get view_count, subscriber_count
+
+        @type url: string
+        @param url: youtube url
+
+        @rtype:  dict
+        @return: view_count, subscriber_count dict data
+    """
     data = {'view_count': 0, 'subscriber_count': 0}
     youtube_data = None
     if check_url(url, 'www.youtube.com'):
