@@ -1,8 +1,7 @@
 __author__ = 'jeffrey'
 
 import sqlite3
-from bottle import route, run, debug, static_file
-from bottle import jinja2_view as view
+from bottle import route, run, debug, static_file, jinja2_view as view, request
 import os.path
 
 from main import Scraper
@@ -14,18 +13,27 @@ def send_static(filename):
     return static_file(filename, root=os.path.join(WEB_ROOT, 'static'))
 
 @route('/')
-@view('index.html')
+@view('index')
 def index():
     conn = sqlite3.connect('data.db')
     c = conn.cursor()
     items = c.execute('SELECT * FROM COMPANY').fetchall()
     return dict(items = items)
 
-@route('/scrape')
-def scrape():
-    file = open('good_format.csv')
+@route('/upload', method='GET')
+@view('upload')
+def upload(error_message=None):
+    return dict(error_message = error_message)
+
+@route('/upload', method='POST')
+@view('upload')
+def do_upload():
+    csvfile = request.files.csvfile
     s = Scraper()
-    s.write_db(s.get_social_media(s.read_csv(file)))
+    try:
+        s.write_db(s.get_social_media(s.read_csv(csvfile.file)))
+    except Exception as e:
+        return upload(error_message='Error: %s' % e.message)
     return index()
 
 debug(True)

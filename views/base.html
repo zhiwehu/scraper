@@ -18,8 +18,19 @@
 </head>
 <body>
 <div class="container">
-    {% block main %}
-    {% endblock %}
+    <section>
+        <div class="page-header">
+            <h2>Social media scraper</h2>
+        </div>
+        <a href="/"><button class="btn btn-success btn-large">Home</button></a>
+        <a href="/upload"><button class="btn btn-success btn-large">Upload csv file</button></a>
+
+        <p></p>
+
+        {% block main %}
+        {% endblock %}
+    </section>
+
 </div>
 
 <!-- Le javascript

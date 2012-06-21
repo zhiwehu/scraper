@@ -22,6 +22,7 @@ youtube_api = gdata.youtube.service.YouTubeService()
 import facebook
 try:
     access_token = facebook.get_app_access_token('193618104088301', '659217362b250bbdae0b61d1e437e8ca')
+    #access_token = None
 except Exception as e:
     log.error(e)
     access_token = None

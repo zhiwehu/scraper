@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block main %}
+    {% if error_message %}
+        <div class="alert alert-error alert-block">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+            <p>{{ error_message }}</p>
+        </div>
+    {% endif %}
+    <form class="well" action="/upload" method="post" enctype="multipart/form-data">
+        <label>CSV file</label>
+        <input type="file" name="csvfile"/>
+        <button type="submit" class="btn btn-info btn-large">Upload</button>
+    </form>
+{% endblock %}

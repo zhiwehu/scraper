@@ -1,49 +1,39 @@
 {% extends "base.html" %}
 {% block main %}
-    <section>
-        <div class="page-header">
-            <h2>Social media scraper</h2>
-        </div>
-        <button class="btn btn-success btn-large">Upload csv file</button>
-        <a href="/scrape"><button class="btn btn-success btn-large">Begin scrape</button></a>
-
-        <p></p>
-
-        <table class="table table-striped table-bordered">
-            <thead>
-            <tr>
-                <th>Company name</th>
-                <th>FB likes</th>
-                <th>FB talking about count</th>
-                <th>FB checkins</th>
-                <th>TW followers</th>
-                <th>TW tweets</th>
-                <th>YT subscriber count</th>
-                <th>YT view count</th>
-                <th>Taken time</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% if items %}
-                {% for item in items %}
-                    <tr>
-                        <td>{{ item[0] }}</td>
-                        <td>{{ item[1] }}</td>
-                        <td>{{ item[2] }}</td>
-                        <td>{{ item[3] }}</td>
-                        <td>{{ item[4] }}</td>
-                        <td>{{ item[5] }}</td>
-                        <td>{{ item[6] }}</td>
-                        <td>{{ item[7] }}</td>
-                        <td>{{ item[8] }}</td>
-                    </tr>
-                {% endfor %}
-            {% else %}
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>Company name</th>
+            <th>FB likes</th>
+            <th>FB talking about count</th>
+            <th>FB checkins</th>
+            <th>TW followers</th>
+            <th>TW tweets</th>
+            <th>YT subscriber count</th>
+            <th>YT view count</th>
+            <th>Taken time</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if items %}
+            {% for item in items %}
                 <tr>
-                    <td rowspan="9">No data</td>
+                    <td>{{ item[0] }}</td>
+                    <td>{{ item[1] }}</td>
+                    <td>{{ item[2] }}</td>
+                    <td>{{ item[3] }}</td>
+                    <td>{{ item[4] }}</td>
+                    <td>{{ item[5] }}</td>
+                    <td>{{ item[6] }}</td>
+                    <td>{{ item[7] }}</td>
+                    <td>{{ item[8] }}</td>
                 </tr>
-            {% endif %}
-            </tbody>
-        </table>
-    </section>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td rowspan="9">No data</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
 {% endblock %}
