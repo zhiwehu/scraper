@@ -3,4 +3,3 @@ gdata
 facebook-sdk
 bottle
 Jinja2
-bottle-sqlite
