@@ -29,4 +29,4 @@ def scrape():
     return index()
 
 debug(True)
-run(host='localhost', port=8000, reloader=True)
+run(host='0.0.0.0', port=8880, reloader=True)
