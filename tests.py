@@ -124,18 +124,20 @@ class ScraperTest(unittest.TestCase):
         self.assertTrue(data['subscriber_count'] > 0)
 
     def testMain(self):
+        s = main.Scraper()
+
         # Test None file
         file = None
         try:
-            main.read_csv(file)
+            s.read_csv(file)
         except Exception as e:
             self.assertEqual('The file is none.', e.message)
 
         # Test good format csv
         file = open('good_format.csv', 'rb')
-        company_list = main.read_csv(file)
+        company_list = s.read_csv(file)
         self.assertTrue(len(company_list) > 0)
-        list = main.get_social_media(company_list[0:1])
+        list = s.get_social_media(company_list[0:1])
         self.assertEqual(1, len(list))
         c = list[0]
         self.assertTrue('Wal-Mart Stores', c.company_name)
@@ -143,12 +145,12 @@ class ScraperTest(unittest.TestCase):
         # Test error format csv
         try:
             file = open('error_format.csv', 'rb')
-            main.read_csv(file)
+            s.read_csv(file)
         except Exception as e:
             self.assertTrue(e)
 
         # Test write db
-        main.write_db(list)
+        s.write_db(list)
 
 if __name__ == '__main__':
     unittest.main()
