@@ -21,8 +21,8 @@ youtube_api = gdata.youtube.service.YouTubeService()
 
 import facebook
 try:
-    access_token = facebook.get_app_access_token('193618104088301', '659217362b250bbdae0b61d1e437e8ca')
-    #access_token = None
+    #access_token = facebook.get_app_access_token('193618104088301', '659217362b250bbdae0b61d1e437e8ca')
+    access_token = None
 except Exception as e:
     log.error(e)
     access_token = None
@@ -107,8 +107,8 @@ def fb_scrape(url):
     if facebook_data:
         data['likes'] = facebook_data.get('likes')
         data['talking_about_count'] = facebook_data.get('talking_about_count')
-        if facebook_data.get('checkins'):
-            data['checkins'] = facebook_data.get('checkins')
+        if facebook_data.get('were_here_count'):
+            data['checkins'] = facebook_data.get('were_here_count')
         else:
             data['checkins'] = 0
     return data

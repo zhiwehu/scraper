@@ -36,5 +36,9 @@ def do_upload():
         return upload(error_message='Error: %s' % e.message)
     return index()
 
+@route('/get_progress')
+def progress():
+    return{'total': 100, 'current':50}
+
 debug(True)
 run(host='0.0.0.0', port=8880, reloader=True)
