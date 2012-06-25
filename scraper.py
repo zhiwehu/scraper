@@ -2,16 +2,8 @@ __author__ = 'zhiwehu'
 
 from urlparse import urlparse
 import re
-import logging
 
-log = logging.getLogger('scraper')
-log.setLevel(logging.DEBUG)
-if not len(log.handlers):
-    handler = logging.FileHandler(filename='log.txt')
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(fmt='%(asctime)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    handler.setFormatter(formatter)
-    log.addHandler(handler)
+from logUtil import log
 
 import twitter
 twitter_api = twitter.Api()
@@ -123,10 +115,11 @@ def tw_scrape(url):
         @rtype:  dict
         @return: followers_count, tweets dict data
     """
-    data = {'followers_count': 0, 'tweets': 0}
+    data = {'twitter_id': '', 'followers_count': 0, 'tweets': 0}
     twitter_data = None
     if check_url(url, 'twitter.com'):
         twitter_id = get_twitter_id(url)
+        data['twitter_id'] = twitter_id
         try:
             twitter_data = twitter_api.GetUser(twitter_id)
         except Exception as e:

@@ -3,21 +3,13 @@ __author__ = 'zhiwehu'
 import sys
 import csv
 import sqlite3
-import logging
+from logUtil import log
 from urlparse import urlparse
 from datetime import datetime
 
 import scraper
+import calculator
 from progress_bar import ProgressBar
-
-log = logging.getLogger('scraper')
-log.setLevel(logging.DEBUG)
-if not len(log.handlers):
-    handler = logging.FileHandler(filename='log.txt')
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(fmt='%(asctime)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    handler.setFormatter(formatter)
-    log.addHandler(handler)
 
 class CompanyURL(object):
     def __init__(self, company_name, fb_url, tw_url, yt_url):
@@ -46,7 +38,7 @@ class CompanySocialMedia(object):
                  company_name,
                  fb_likes=None,
                  fb_talking_about_count=None,
-                 fb_chickins=None,
+                 fb_checkins=None,
                  tw_followers_count=None,
                  tw_tweets=None,
                  yt_subscriber_count=None,
@@ -61,8 +53,8 @@ class CompanySocialMedia(object):
             @param fb_likes: facebook like count
             @type fb_talking_about_count: int
             @param fb_talking_about_count: facebook talking about count
-            @type fb_chickins: int
-            @param fb_chickins: facebook checkins
+            @type fb_checkins: int
+            @param fb_checkins: facebook checkins
             @type tw_followers_count: int
             @param tw_followers_count: twitter followers count
             @type tw_tweets: int
@@ -80,7 +72,7 @@ class CompanySocialMedia(object):
         self.company_name = company_name
         self.fb_likes = fb_likes
         self.fb_talking_about_count = fb_talking_about_count
-        self.fb_chickins = fb_chickins
+        self.fb_checkins = fb_checkins
         self.tw_followers_count = tw_followers_count
         self.tw_tweets = tw_tweets
         self.yt_subscriber_count = yt_subscriber_count
@@ -154,13 +146,17 @@ class Scraper(object):
             yt_data = scraper.yt_scrape(company.yt_url)
             company_sm_data.fb_likes = fb_data['likes']
             company_sm_data.fb_talking_about_count = fb_data['talking_about_count']
-            company_sm_data.fb_chickins = fb_data['checkins']
+            company_sm_data.fb_checkins = fb_data['checkins']
             company_sm_data.tw_followers_count = tw_data['followers_count']
             company_sm_data.tw_tweets = tw_data['tweets']
             company_sm_data.yt_subscriber_count = yt_data['subscriber_count']
             company_sm_data.yt_view_count = yt_data['view_count']
             # Keep same time_taken for this batch operation
             company_sm_data.time_taken = current_datetime
+            fb_metrics = calculator.cal_fb_hm(company_sm_data.fb_likes, company_sm_data.fb_talking_about_count, company_sm_data.fb_checkins)
+            tw_metrics = calculator.cal_tw_hm(tw_data['twitter_id'], company_sm_data.tw_followers_count, company_sm_data.tw_tweets)
+            yt_metrics = calculator.cal_yt_hm(company_sm_data.yt_subscriber_count, company_sm_data.yt_view_count)
+
             result.append(company_sm_data)
 
             self.progress.current += 1
@@ -192,7 +188,7 @@ class Scraper(object):
                  COMPANY_NAME TEXT,
                  FB_LIKES INTEGER,
                  FB_TALKING_ABOUT_COUNT INTEGER,
-                 FB_CHICKINS INTEGER,
+                 FB_CHECKINS INTEGER,
                  TW_FOLLOWERS_COUNT INTEGER,
                  TW_TWEETS INTEGER,
                  YT_SUBSCRIBER_COUNT INTEGER,
@@ -207,7 +203,7 @@ class Scraper(object):
                     (company.company_name,
                      company.fb_likes,
                      company.fb_talking_about_count,
-                     company.fb_chickins,
+                     company.fb_checkins,
                      company.tw_followers_count,
                      company.tw_tweets,
                      company.yt_subscriber_count,
