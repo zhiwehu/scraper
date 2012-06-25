@@ -3,11 +3,11 @@ __author__ = 'jeffrey'
 import urllib2
 from logUtil import log
 
-api_key='E3C6EC74-F374-4B31-A298-07FEF594E3E3'
+api_key = 'E3C6EC74-F374-4B31-A298-07FEF594E3E3'
 
 def get_tw_data(twitter_id):
     data = {'impact': 0, 'engagement': 0, 'influence': 0, 'retweeted': 0, 'klout_truereach': 0}
-    url='http://www.twitalyzer.com/api/2/user.asp?k=%s&u=%s&f=JSON' % (api_key, twitter_id)
+    url = 'http://www.twitalyzer.com/api/2/user.asp?k=%s&u=%s&f=JSON' % (api_key, twitter_id)
     try:
         tw_api_data = urllib2.urlopen(url).read()
         log.debug(tw_api_data)
@@ -19,9 +19,7 @@ def get_tw_data(twitter_id):
             if data.has_key(key):
                 data[key] = value
     except Exception as e:
+        log.error('Get twitter data error for %s' % twitter_id)
         log.error(e)
         pass
     return data
-
-a = get_tw_data('Subway')
-print a

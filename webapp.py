@@ -1,7 +1,7 @@
 __author__ = 'jeffrey'
 
 import sqlite3
-from bottle import route, run, debug, static_file, jinja2_view as view, request
+from bottle import route, run, debug, static_file, jinja2_view as view, request, redirect
 import os.path
 
 from main import Scraper
@@ -34,7 +34,7 @@ def do_upload():
         s.write_db(s.get_social_media(s.read_csv(csvfile.file)))
     except Exception as e:
         return upload(error_message='Error: %s' % e.message)
-    return index()
+    return redirect('/')
 
 @route('/get_progress')
 def progress():

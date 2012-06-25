@@ -7,10 +7,31 @@
             <th>FB likes</th>
             <th>FB talking about count</th>
             <th>FB checkins</th>
+            <th>FB T/L</th>
+            <th>FB Ch/L</th>
+            <th>FB Combined</th>
+            <th>sqrt(FB_Likes)</th>
+            <th>sqrt(FBTChk)</th>
+            <th>FBHealth</th>
             <th>TW followers</th>
             <th>TW tweets</th>
+            <th>TW Impact</th>
+            <th>TW Engagement</th>
+            <th>TW Influence</th>
+            <th>TW Retweeted</th>
+            <th>TW KlTrueReach</th>
+            <th>TWHealth</th>
             <th>YT subscriber count</th>
             <th>YT view count</th>
+            <th>YT Health</th>
+            <th>TSSH Raw</th>
+            <th>TSSH PwrReduced</th>
+            <th>%FB</th>
+            <th>%TW</th>
+            <th>%YT</th>
+            <th>FB (abs)</th>
+            <th>TW (abs)</th>
+            <th>YT (abs)</th>
             <th>Taken time</th>
         </tr>
         </thead>
@@ -22,11 +43,32 @@
                     <td>{{ item[1] }}</td>
                     <td>{{ item[2] }}</td>
                     <td>{{ item[3] }}</td>
-                    <td>{{ item[4] }}</td>
-                    <td>{{ item[5] }}</td>
-                    <td>{{ item[6] }}</td>
-                    <td>{{ item[7] }}</td>
-                    <td>{{ item[8] }}</td>
+                    <td>{{ item[4]|round(2) }}</td>
+                    <td>{{ item[5]|round(2) }}</td>
+                    <td>{{ item[6]|round(2) }}</td>
+                    <td>{{ item[7]|round(2) }}</td>
+                    <td>{{ item[8]|round(2) }}</td>
+                    <td>{{ item[9]|round(2) }}</td>
+                    <td>{{ item[10] }}</td>
+                    <td>{{ item[11] }}</td>
+                    <td>{{ item[12] }}</td>
+                    <td>{{ item[13] }}</td>
+                    <td>{{ item[14] }}</td>
+                    <td>{{ item[15] }}</td>
+                    <td>{{ item[16] }}</td>
+                    <td>{{ item[17]|round(2) }}</td>
+                    <td>{{ item[18] }}</td>
+                    <td>{{ item[19] }}</td>
+                    <td>{{ item[20]|round(2) }}</td>
+                    <td>{{ item[21]|round(2) }}</td>
+                    <td>{{ item[22]|round(2) }}</td>
+                    <td>{{ item[23]|round(2) }}</td>
+                    <td>{{ item[24]|round(2) }}</td>
+                    <td>{{ item[25]|round(2) }}</td>
+                    <td>{{ item[26]|round(2) }}</td>
+                    <td>{{ item[27]|round(2) }}</td>
+                    <td>{{ item[28]|round(2) }}</td>
+                    <td>{{ item[29] }}</td>
                 </tr>
             {% endfor %}
         {% else %}
