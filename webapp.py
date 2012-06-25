@@ -17,7 +17,7 @@ def send_static(filename):
 def index():
     conn = sqlite3.connect('data.db')
     c = conn.cursor()
-    items = c.execute('SELECT * FROM COMPANY').fetchall()
+    items = c.execute('SELECT * FROM COMPANY ORDER BY TIME_TAKEN DESC').fetchall()
     return dict(items = items)
 
 @route('/upload', method='GET')

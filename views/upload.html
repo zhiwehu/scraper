@@ -1,51 +1,55 @@
 {% extends "base.html" %}
 
 {% block main %}
-    {% if error_message %}
-        <div class="alert alert-error alert-block">
-            <a class="close" data-dismiss="alert" href="#">×</a>
-            <p>{{ error_message }}</p>
-        </div>
-    {% endif %}
-    <form id="upload_form" class="well" action="/upload" method="post" enctype="multipart/form-data">
-        <label>CSV file</label>
-        <input type="file" name="csvfile"/>
+{% if error_message %}
+<div class="alert alert-error alert-block">
+    <a class="close" data-dismiss="alert" href="#">×</a>
+
+    <p>{{ error_message }}</p>
+</div>
+{% endif %}
+<form class="form-horizontal" id="upload_form" action="/upload" method="post" enctype="multipart/form-data">
+    <label class="file-label" for="csvfile">CSV file</label>
+    <input type="file" id="csvfile" name="csvfile"/>
+
+    <div class="form-actions">
         <button id="upload_file" type="submit" class="btn btn-info btn-large">Upload</button>
-    </form>
-    <div class="progress progress-striped active">
-        <div class="bar" style="width: 0%;"></div>
     </div>
+</form>
+<div class="progress progress-striped active">
+    <div class="bar" style="width: 0%;"></div>
+</div>
 {% endblock %}
 
 {% block ext_script %}
-    <!--<script type="text/javascript">
-        /*$(document).ready(function(){
-            $("#upload_form").submit(function() {
-                var bar = $(".bar");
-                var perc = 100;
-                var current_perc = 0;
+<!--<script type="text/javascript">
+    /*$(document).ready(function(){
+        $("#upload_form").submit(function() {
+            var bar = $(".bar");
+            var perc = 100;
+            var current_perc = 0;
 
-                var progress = setInterval(function() {
-                    if (current_perc>=perc) {
-                        clearInterval(progress);
-                        $(".progress").removeClass("active");
-                    } else {
-                        $.ajax({
-                            url:"/get_progress",
-                            cache:false,
-                            success:function (data) {
-                                alert(data.current);
-                            },
-                            dataType:"json"
-                        });
-                        bar.css('width', (current_perc)+'%');
-                    }
+            var progress = setInterval(function() {
+                if (current_perc>=perc) {
+                    clearInterval(progress);
+                    $(".progress").removeClass("active");
+                } else {
+                    $.ajax({
+                        url:"/get_progress",
+                        cache:false,
+                        success:function (data) {
+                            alert(data.current);
+                        },
+                        dataType:"json"
+                    });
+                    bar.css('width', (current_perc)+'%');
+                }
 
-                    bar.text((current_perc)+'%');
+                bar.text((current_perc)+'%');
 
-                }, 800);
-                return true;
-            });
-        })*/
-    </script>-->
+            }, 800);
+            return true;
+        });
+    })*/
+</script>-->
 {% endblock %}
