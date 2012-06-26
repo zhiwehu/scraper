@@ -4,6 +4,8 @@ import sqlite3
 from bottle import route, run, debug, static_file, jinja2_view as view, request, redirect
 import os.path
 from datetime import datetime
+import threading
+from logUtil import log
 
 from main import Scraper
 
@@ -34,7 +36,11 @@ def do_upload():
     csvfile = request.files.csvfile
     s = Scraper()
     try:
-        s.write_db(s.get_social_media(s.read_csv(csvfile.file)))
+        if csvfile.file == None:
+            raise Exception('The file is None')
+        #s.read_csv(csvfile.file)
+        #s.write_db(s.get_social_media(s.read_csv(csvfile.file)))
+        do_scrape_async(s, csvfile.file)
     except Exception as e:
         return upload(error_message='Error: %s' % e.message)
     return redirect('/')
@@ -62,6 +68,19 @@ def get_setting():
     c.close()
     conn.close()
     return setting
+
+class ScrapeThread(threading.Thread):
+    def __init__(self, scraper, file):
+        self.scraper = scraper
+        self.file = file
+        threading.Thread.__init__(self)
+
+    def run(self):
+        log.debug('run the scrape process async background')
+        self.scraper.write_db(self.scraper.get_social_media(self.scraper.read_csv(self.file)))
+
+def do_scrape_async(scraper, file):
+    ScrapeThread(scraper, file).start()
 
 @route('/settings', method='POST')
 @view('settings')
