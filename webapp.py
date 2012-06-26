@@ -38,8 +38,7 @@ def do_upload():
     try:
         if csvfile.file == None:
             raise Exception('The file is None')
-        #s.read_csv(csvfile.file)
-        #s.write_db(s.get_social_media(s.read_csv(csvfile.file)))
+        # Run the scrape process in background
         do_scrape_async(s, csvfile.file)
     except Exception as e:
         return upload(error_message='Error: %s' % e.message)
@@ -97,12 +96,13 @@ def do_settings():
         conn.commit()
         c.close()
         conn.close()
+        # Re schedule with new interval seconds
         cron.reSchedule(seconds=schedule_interval)
     except Exception as e:
-        error_message = e.message
-        return settings(error_message = error_message)
+        return settings(error_message = e.message)
     return settings(success_message = 'Settings has been updated!')
 
+# Call cron.reSchedule to schedule the job with default interval(86400, 1 day) when start the webapp
 import cron
 schedule_interval = get_setting()[0]
 cron.reSchedule(seconds=schedule_interval)

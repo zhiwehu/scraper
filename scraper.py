@@ -1,4 +1,4 @@
-__author__ = 'zhiwehu'
+__author__ = 'jeffrey'
 
 from urlparse import urlparse
 import re

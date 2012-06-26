@@ -1,0 +1,40 @@
+COMPANY
+'''CREATE TABLE IF NOT EXISTS COMPANY
+                 (
+                 COMPANY_NAME TEXT,
+                 FB_LIKES INTEGER,
+                 FB_TALKING_ABOUT_COUNT INTEGER,
+                 FB_CHECKINS INTEGER,
+                 FB_TL REAL,
+                 FB_CHL REAL,
+                 FB_COMBINED REAL,
+                 FB_LIKES_SQRT REAL,
+                 FB_TCHK_SQRT REAL,
+                 FB_HEALTH REAL,
+                 TW_FOLLOWERS_COUNT INTEGER,
+                 TW_TWEETS INTEGER,
+                 TW_IMPACT REAL,
+                 TW_ENGAGEMENT REAL,
+                 TW_INFLUENCE REAL,
+                 TW_RETWEETED REAL,
+                 TW_KLOUT_TRUEREACH REAL,
+                 TW_HEALTH REAL,
+                 YT_SUBSCRIBER_COUNT INTEGER,
+                 YT_VIEW_COUNT INTEGER,
+                 YT_HEALTH REAL,
+                 TSSH_RAW REAL,
+                 TSSH_PWR_REDUCED REAL,
+                 FB_PERCENT REAL,
+                 TW_PERCENT REAL,
+                 YT_PERCENT REAL,
+                 FB_ABS REAL,
+                 TW_ABS REAL,
+                 YT_ABS REAL,
+                 TIME_TAKEN TIMESTAMP
+                 )'''
+
+SETTINGS
+'''CREATE TABLE IF NOT EXISTS SETTINGS
+                 (
+                 SCHEDULE_INTERVAL INTEGER,
+                 LAST_MODIFIED_TIME TIMESTAMP)'''
