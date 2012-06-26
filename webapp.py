@@ -6,6 +6,9 @@ import os.path
 
 from main import Scraper
 
+# Import cron will do the cronjob automatically
+import cron
+
 WEB_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 @route('/static/<filename:path>')
