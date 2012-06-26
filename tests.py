@@ -3,6 +3,8 @@ __author__ = 'zhiwehu'
 import unittest
 import scraper
 import main
+import cron
+import time
 
 class ScraperTest(unittest.TestCase):
     def setUp(self):
@@ -151,6 +153,10 @@ class ScraperTest(unittest.TestCase):
 
         # Test write db
         s.write_db(list)
+
+    def testSchedule(self):
+        cron.reSchedule(5*60)
+        time.sleep(7*60)
 
 if __name__ == '__main__':
     unittest.main()
