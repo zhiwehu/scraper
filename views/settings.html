@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+    {% if success_message %}
+        <div class="alert alert-success alert-block">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+
+            <p>{{ success_message }}</p>
+        </div>
+    {% endif %}
+
+    {% if error_message %}
+        <div class="alert alert-error alert-block">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+
+            <p>{{ error_message }}</p>
+        </div>
+    {% endif %}
+
+    <form class="form-horizontal" id="settings_form" action="/settings" method="post" enctype="multipart/form-data">
+        <label class="file-label" for="schedule_interval">Schedule Interval (seconds), min value is 300</label>
+        <input id="schedule_interval" name="schedule_interval" value="{{ setting[0] }}"/>
+
+        <div class="form-actions">
+            <button id="update_settings" type="submit" class="btn btn-info btn-large">Submit</button>
+        </div>
+    </form>
+{% endblock %}

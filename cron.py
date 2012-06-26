@@ -8,13 +8,10 @@ sched = Scheduler()
 sched.start()
 
 def doJob():
-    """
-    file = open('good_format.csv')
+    file = open('data/good_format.csv')
     s = Scraper()
     count = s.write_db(s.get_social_media(s.read_csv(file)))
     log.info('%d records has been saved to database %s' % (count, 'data.db'))
-    """
-    log.info('test')
 
 def reSchedule(seconds=86400):
     log.debug('job reschedule seconds %d' % seconds)

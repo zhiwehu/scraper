@@ -16,40 +16,4 @@
         <button id="upload_file" type="submit" class="btn btn-info btn-large">Upload</button>
     </div>
 </form>
-<div class="progress progress-striped active">
-    <div class="bar" style="width: 0%;"></div>
-</div>
-{% endblock %}
-
-{% block ext_script %}
-<!--<script type="text/javascript">
-    /*$(document).ready(function(){
-        $("#upload_form").submit(function() {
-            var bar = $(".bar");
-            var perc = 100;
-            var current_perc = 0;
-
-            var progress = setInterval(function() {
-                if (current_perc>=perc) {
-                    clearInterval(progress);
-                    $(".progress").removeClass("active");
-                } else {
-                    $.ajax({
-                        url:"/get_progress",
-                        cache:false,
-                        success:function (data) {
-                            alert(data.current);
-                        },
-                        dataType:"json"
-                    });
-                    bar.css('width', (current_perc)+'%');
-                }
-
-                bar.text((current_perc)+'%');
-
-            }, 800);
-            return true;
-        });
-    })*/
-</script>-->
 {% endblock %}
