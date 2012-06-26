@@ -155,8 +155,10 @@ class ScraperTest(unittest.TestCase):
         s.write_db(list)
 
     def testSchedule(self):
-        cron.reSchedule(5*60)
-        time.sleep(7*60)
+        cron.reSchedule(5)
+        time.sleep(11)
+        cron.reSchedule(10)
+        time.sleep(21)
 
 if __name__ == '__main__':
     unittest.main()
