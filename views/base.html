@@ -28,6 +28,21 @@
 
         <p></p>
 
+        {% if success_message %}
+            <div class="alert alert-success alert-block">
+                <a class="close" data-dismiss="alert" href="#">×</a>
+
+                <p>{{ success_message }}</p>
+            </div>
+        {% endif %}
+
+        {% if error_message %}
+            <div class="alert alert-error alert-block">
+                <a class="close" data-dismiss="alert" href="#">×</a>
+
+                <p>{{ error_message }}</p>
+            </div>
+        {% endif %}
         {% block main %}
         {% endblock %}
     </section>

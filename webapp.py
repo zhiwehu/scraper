@@ -17,13 +17,13 @@ def send_static(filename):
 
 @route('/')
 @view('index')
-def index():
+def index(error_message = None, success_message = None):
     conn = sqlite3.connect('data.db')
     c = conn.cursor()
     items = c.execute('SELECT * FROM COMPANY ORDER BY TIME_TAKEN DESC').fetchall()
     c.close()
     conn.close()
-    return dict(items = items)
+    return dict(items = items, error_message = error_message, success_message = success_message)
 
 @route('/upload', method='GET')
 @view('upload')
@@ -43,7 +43,8 @@ def do_upload():
         do_scrape_async(s, csvfile.file)
     except Exception as e:
         return upload(error_message='Error: %s' % e.message)
-    return redirect('/')
+    #return redirect('/')
+    return index(success_message='The file updated success and will do scrape in background. Please refrush page later to view the new data.')
 
 @route('/settings', method='GET')
 @view('settings')
