@@ -34,6 +34,4 @@ It'll run the webapp on background. You can visit the webapp from http://65.60.1
 If you want to stop the webapp, just use kill command to kill the process
 
 7. Configure the cronjob
-$ vi cron.py
-Change the "t" value, if you want to run the cronjob every day, just set the "t=86400"
-Need to restart webapp after you change the interval value.
+$ http://65.60.12.130:8880/settings
