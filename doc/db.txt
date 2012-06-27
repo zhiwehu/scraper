@@ -1,6 +1,15 @@
+CSV_FILE
+'''CREATE TABLE IF NOT EXISTS CSV_FILE
+                 (
+                 CSV_FILE_NAME TEXT,
+                 CSV_FILE_PATH TEXT,
+                 LAST_MODIFIED_TIME TIMESTAMP
+                 )'''
+
 COMPANY
 '''CREATE TABLE IF NOT EXISTS COMPANY
                  (
+                 CSV_FILE_NAME TEXT,
                  COMPANY_NAME TEXT,
                  FB_LIKES INTEGER,
                  FB_TALKING_ABOUT_COUNT INTEGER,

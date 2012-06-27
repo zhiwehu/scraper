@@ -42,8 +42,10 @@ def index(error_message=None, success_message=None):
 @route('/upload', method='GET')
 @view('upload')
 def upload(error_message=None):
+    # 1. create csv_file table if not exist
+    # 2. read this table and pass table data to page
+    # 3. on page render the data into html table
     return dict(error_message=error_message)
-
 
 @route('/upload', method='POST')
 @view('upload')
