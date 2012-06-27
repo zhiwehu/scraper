@@ -138,12 +138,12 @@ def company_chart(error_message=None, success_message=None):
 
     if company_name and company_name != 'ALL':
         items = c.execute(
-            'SELECT COMPANY_NAME, TSSH_PWR_REDUCED, TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN DESC'
+            'SELECT TSSH_PWR_REDUCED, TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC'
             , (company_name, )).fetchall()
     else:
         company_name = company_list[0]
         items = c.execute(
-            'SELECT COMPANY_NAME, TSSH_PWR_REDUCED, TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN DESC'
+            'SELECT TSSH_PWR_REDUCED, TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC'
             , (company_name,)).fetchall()
     c.close()
     conn.close()
