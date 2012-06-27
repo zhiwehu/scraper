@@ -15,20 +15,35 @@ WEB_ROOT = os.path.abspath(os.path.dirname(__file__))
 def send_static(filename):
     return static_file(filename, root=os.path.join(WEB_ROOT, 'static'))
 
+
 @route('/')
 @view('index')
-def index(error_message = None, success_message = None):
+def index(error_message=None, success_message=None):
+    company_name = request.GET.get('company_name', None)
     conn = sqlite3.connect('data.db')
     c = conn.cursor()
-    items = c.execute('SELECT * FROM COMPANY ORDER BY TIME_TAKEN DESC').fetchall()
+
+    companies = c.execute('SELECT DISTINCT COMPANY_NAME FROM COMPANY').fetchall()
+    company_list = []
+    for company in companies:
+        company_list.append(company[0])
+
+    if company_name and company_name != 'ALL':
+        items = c.execute('SELECT * FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN DESC',
+            (company_name, )).fetchall()
+    else:
+        items = c.execute('SELECT * FROM COMPANY ORDER BY TIME_TAKEN DESC').fetchall()
     c.close()
     conn.close()
-    return dict(items = items, error_message = error_message, success_message = success_message)
+    return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
+        company_name=company_name)
+
 
 @route('/upload', method='GET')
 @view('upload')
 def upload(error_message=None):
-    return dict(error_message = error_message)
+    return dict(error_message=error_message)
+
 
 @route('/upload', method='POST')
 @view('upload')
@@ -38,18 +53,21 @@ def do_upload():
     try:
         if csvfile.file == None:
             raise Exception('The file is None')
-        # Run the scrape process in background
+            # Run the scrape process in background
         do_scrape_async(s, csvfile.file)
     except Exception as e:
         return upload(error_message='Error: %s' % e.message)
-    #return redirect('/')
-    return index(success_message='The file updated success and will do scrape in background. Please refrush page later to view the new data.')
+        #return redirect('/')
+    return index(
+        success_message='The file updated success and will do scrape in background. Please refrush page later to view the new data.')
+
 
 @route('/settings', method='GET')
 @view('settings')
-def settings(error_message = None, success_message = None):
+def settings(error_message=None, success_message=None):
     setting = get_setting()
-    return dict(setting = setting, error_message = error_message, success_message = success_message)
+    return dict(setting=setting, error_message=error_message, success_message=success_message)
+
 
 def get_setting():
     conn = sqlite3.connect('data.db')
@@ -69,6 +87,7 @@ def get_setting():
     conn.close()
     return setting
 
+
 class ScrapeThread(threading.Thread):
     def __init__(self, scraper, file):
         self.scraper = scraper
@@ -79,8 +98,10 @@ class ScrapeThread(threading.Thread):
         log.debug('run the scrape process async background')
         self.scraper.write_db(self.scraper.get_social_media(self.scraper.read_csv(self.file)))
 
+
 def do_scrape_async(scraper, file):
     ScrapeThread(scraper, file).start()
+
 
 @route('/settings', method='POST')
 @view('settings')
@@ -92,18 +113,68 @@ def do_settings():
             raise Exception('The min schedule interval should be more than 300 seconds')
         conn = sqlite3.connect('data.db')
         c = conn.cursor()
-        c.execute('UPDATE SETTINGS SET SCHEDULE_INTERVAL = ?, LAST_MODIFIED_TIME = ?', (schedule_interval, datetime.now()))
+        c.execute('UPDATE SETTINGS SET SCHEDULE_INTERVAL = ?, LAST_MODIFIED_TIME = ?',
+            (schedule_interval, datetime.now()))
         conn.commit()
         c.close()
         conn.close()
         # Re schedule with new interval seconds
         cron.reSchedule(seconds=schedule_interval)
     except Exception as e:
-        return settings(error_message = e.message)
-    return settings(success_message = 'Settings has been updated!')
+        return settings(error_message=e.message)
+    return settings(success_message='Settings has been updated!')
+
+
+@route('/company_chart')
+@view('company_chart')
+def company_chart(error_message=None, success_message=None):
+    company_name = request.GET.get('company_name', None)
+    conn = sqlite3.connect('data.db')
+    c = conn.cursor()
+    companies = c.execute('SELECT DISTINCT COMPANY_NAME FROM COMPANY').fetchall()
+    company_list = []
+    for company in companies:
+        company_list.append(company[0])
+
+    if company_name and company_name != 'ALL':
+        items = c.execute(
+            'SELECT COMPANY_NAME, TSSH_PWR_REDUCED, TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN DESC'
+            , (company_name, )).fetchall()
+    else:
+        company_name = company_list[0]
+        items = c.execute(
+            'SELECT COMPANY_NAME, TSSH_PWR_REDUCED, TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN DESC'
+            , (company_name,)).fetchall()
+    c.close()
+    conn.close()
+    return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
+        company_name=company_name)
+
+@route('/macro_level_chart')
+@view('macro_level_chart')
+def company_chart(error_message=None, success_message=None):
+    company_name = request.GET.get('company_name', None)
+    conn = sqlite3.connect('data.db')
+    c = conn.cursor()
+
+    companies = c.execute('SELECT DISTINCT COMPANY_NAME FROM COMPANY').fetchall()
+    company_list = []
+    for company in companies:
+        company_list.append(company[0])
+
+    if company_name and company_name != 'ALL':
+        items = c.execute('SELECT * FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN DESC',
+            (company_name, )).fetchall()
+    else:
+        items = c.execute('SELECT * FROM COMPANY ORDER BY TIME_TAKEN DESC').fetchall()
+    c.close()
+    conn.close()
+    return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
+        company_name=company_name)
 
 # Call cron.reSchedule to schedule the job with default interval(86400, 1 day) when start the webapp
 import cron
+
 schedule_interval = get_setting()[0]
 cron.reSchedule(seconds=schedule_interval)
 

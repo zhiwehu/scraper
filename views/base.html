@@ -22,9 +22,28 @@
         <div class="page-header">
             <h2>Social media scraper</h2>
         </div>
-        <a href="/"><button class="btn btn-success btn-large">Home</button></a>
-        <a href="/upload"><button class="btn btn-success btn-large">Upload csv file</button></a>
-        <a href="/settings"><button class="btn btn-success btn-large">Settings</button></a>
+
+        <div class="btn-toolbar">
+            <div class="btn-group">
+                <a class="btn btn-success btn-large" href="/"><i class="icon-home icon-white"></i> Home</a>
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-success btn-large" href="/upload"><i class="icon-file icon-white"></i> Upload csv file</a>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-success btn-large"><i class="icon-picture icon-white"></i> Chart</button>
+                <button class="btn btn-large btn-success dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="/company_chart">Company chart</a></li>
+                    <li><a href="/macro_level_chart">Macro-level chart</a></li>
+                </ul>
+            </div>
+            <div class="btn-group">
+                <a class="btn btn-success btn-large" href="/settings"><i class="icon-wrench icon-white"></i> Settings</a>
+            </div>
+        </div>
 
         <p></p>
 
@@ -54,6 +73,8 @@
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/highchart/highcharts.js"></script>
+<script src="/static/js/highchart/modules/exporting.js"></script>
 {% block ext_script %}
 {% endblock %}
 </body>
