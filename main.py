@@ -90,7 +90,7 @@ class CompanySocialMedia(object):
 class Scraper(object):
     def __init__(self):
         pass
-    
+
     def read_csv(self, file):
         """
             Read csv into list

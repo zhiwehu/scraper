@@ -112,7 +112,7 @@ class ScrapeThread(threading.Thread):
 
     def run(self):
         log.debug('run the scrape process async background')
-        self.scraper.write_db(self.scraper.get_social_media(self.scraper.read_csv(self.file)))
+        self.scraper.write_db(self.scraper.get_social_media(self.scraper.read_csv(self.file)),'data.db')
 
 
 def do_scrape_async(scraper, file):
