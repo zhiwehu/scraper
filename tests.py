@@ -3,8 +3,6 @@ __author__ = 'jeffrey'
 import unittest
 import scraper
 import main
-import cron
-import time
 import sqlite3
 
 class ScraperTest(unittest.TestCase):
