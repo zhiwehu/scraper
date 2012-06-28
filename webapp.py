@@ -45,7 +45,21 @@ def upload(error_message=None):
     # 1. create csv_file table if not exist
     # 2. read this table and pass table data to page
     # 3. on page render the data into html table
-    return dict(error_message=error_message)
+    conn = sqlite3.connect('data/setting.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS CSV_DB
+                 (
+                 CSV_FILE_NAME TEXT,
+                 CSV_FILE_PATH TEXT,
+                 DB_FILE_NAME TEXT,
+                 DB_FILE_PATH TEXT,
+                 LAST_MODIFIED_TIME TIMESTAMP
+                 )''')
+
+    csv_db_list = c.execute('SELECT * FROM CSV_DB').fetchall()
+    c.close()
+    conn.close()
+    return dict(error_message=error_message, csv_db_list = csv_db_list)
 
 @route('/upload', method='POST')
 @view('upload')
@@ -72,7 +86,7 @@ def settings(error_message=None, success_message=None):
 
 
 def get_setting():
-    conn = sqlite3.connect('data.db')
+    conn = sqlite3.connect('data/setting.db')
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS SETTINGS
                  (
@@ -154,7 +168,7 @@ def company_chart(error_message=None, success_message=None):
 
 @route('/macro_level_chart')
 @view('macro_level_chart')
-def company_chart(error_message=None, success_message=None):
+def macro_level_chart(error_message=None, success_message=None):
     company_name = request.GET.get('company_name', None)
     conn = sqlite3.connect('data.db')
     c = conn.cursor()

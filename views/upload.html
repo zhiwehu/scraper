@@ -1,12 +1,39 @@
 {% extends "base.html" %}
 
 {% block main %}
-<form class="form-horizontal" id="upload_form" action="/upload" method="post" enctype="multipart/form-data">
-    <label class="file-label" for="csvfile">CSV file</label>
-    <input type="file" id="csvfile" name="csvfile"/>
-
-    <div class="form-actions">
+    <form class="form-search well" id="upload_form" action="/upload" method="post" enctype="multipart/form-data">
+        <label class="file-label" for="csvfile">CSV file</label>
+        <input type="file" id="csvfile" name="csvfile"/>
+        &nbsp;&nbsp;
         <button id="upload_file" type="submit" class="btn btn-info btn-large">Upload</button>
-    </div>
-</form>
+    </form>
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>CSV File</th>
+            <th>CSV Path</th>
+            <th>DB File</th>
+            <th>DB Path</th>
+            <th>Last modified time</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if csv_db_list %}
+            {% for item in csv_db_list %}
+                <tr>
+                    <td>{{ item[0] }}</td>
+                    <td>{{ item[1] }}</td>
+                    <td>{{ item[2] }}</td>
+                    <td>{{ item[3] }}</td>
+                    <td>{{ item[4] }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="5">No data</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
 {% endblock %}
