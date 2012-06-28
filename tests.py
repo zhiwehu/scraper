@@ -162,11 +162,13 @@ class ScraperTest(unittest.TestCase):
         c.close()
         conn.close()
 
+    """
     def testSchedule(self):
         cron.reSchedule(5)
         time.sleep(11)
         cron.reSchedule(10)
         time.sleep(21)
+    """
 
 if __name__ == '__main__':
     unittest.main()
