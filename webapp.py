@@ -194,7 +194,7 @@ def do_macro_level_chart(error_message=None, success_message=None):
         c.close()
         conn.close()
     return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
-        company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name, avg_company_data= avg_company_data)
+        company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name, avg_company_data= avg_company_data, selected_company_list= selected_company_list)
 
 # Call cron.reSchedule to schedule the job with default interval(86400, 1 day) when start the webapp
 import cron
