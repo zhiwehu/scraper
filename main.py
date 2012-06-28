@@ -91,7 +91,7 @@ class Scraper(object):
     def __init__(self):
         pass
 
-    def read_csv(self, file):
+    def read_csv(self, file, close=False):
         """
             Read csv into list
 
@@ -119,7 +119,8 @@ class Scraper(object):
                 company = CompanyURL(company_name, fb_url, tw_url, yt_url)
                 company_list.append(company)
 
-        file.close()
+        if close:
+            file.close()
         return company_list
 
     def get_social_media(self, company_list):

@@ -136,7 +136,7 @@ class ScraperTest(unittest.TestCase):
             self.assertEqual('The file is none.', e.message)
 
         # Test good format csv
-        file = open('data/good_format.csv', 'rb')
+        file = open('testdata/good_format.csv', 'rb')
         company_list = s.read_csv(file)
         self.assertTrue(len(company_list) > 0)
         list = s.get_social_media(company_list[0:1])
@@ -146,14 +146,14 @@ class ScraperTest(unittest.TestCase):
 
         # Test error format csv
         try:
-            file = open('data/error_format.csv', 'rb')
+            file = open('testdata/error_format.csv', 'rb')
             s.read_csv(file)
         except Exception as e:
             self.assertTrue(e)
 
         # Test write db
-        s.write_db(list,'data.db')
-        conn = sqlite3.connect('data.db')
+        s.write_db(list,'testdata/data.db')
+        conn = sqlite3.connect('testdata/data.db')
         c = conn.cursor()
         # Create table
         c.execute('DELETE FROM COMPANY')

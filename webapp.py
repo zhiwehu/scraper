@@ -4,17 +4,15 @@ import sqlite3
 from bottle import route, run, debug, static_file, jinja2_view as view, request, redirect
 import os.path
 from datetime import datetime
-import threading
-from logUtil import log
 
 from main import Scraper
+from utils import *
 
 WEB_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 @route('/static/<filename:path>')
 def send_static(filename):
     return static_file(filename, root=os.path.join(WEB_ROOT, 'static'))
-
 
 @route('/')
 @view('index')
@@ -41,10 +39,7 @@ def index(error_message=None, success_message=None):
 
 @route('/upload', method='GET')
 @view('upload')
-def upload(error_message=None):
-    # 1. create csv_file table if not exist
-    # 2. read this table and pass table data to page
-    # 3. on page render the data into html table
+def upload(success_message=None, error_message=None):
     conn = sqlite3.connect('data/setting.db')
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS CSV_DB
@@ -64,17 +59,29 @@ def upload(error_message=None):
 @route('/upload', method='POST')
 @view('upload')
 def do_upload():
-    csvfile = request.files.csvfile
+    csvfile = request.files.get('csvfile', None)
     s = Scraper()
     try:
         if csvfile.file == None:
             raise Exception('The file is None')
+        company_list = s.read_csv(csvfile.file)
+        if len(company_list) > 0:
+            # Save the file
+            f = open('%s/data/%s' % (WEB_ROOT, csvfile.filename), 'w')
+            f.write(csvfile.value)
+            # Save to CSV_FILE db
+            csv_file_path, db_file_path = save_csv_db(csvfile)
             # Run the scrape process in background
-        do_scrape_async(s, csvfile.file)
+            f = open('%s/%s' % (WEB_ROOT, csvfile.filename), 'r')
+            # TODO just upload, not scrape
+            do_scrape_async(s, csv_file_path, db_file_path)
+        else:
+            raise Exception('The file is not format as company list')
     except Exception as e:
+        print e
         return upload(error_message='Error: %s' % e.message)
         #return redirect('/')
-    return index(
+    return upload(
         success_message='The file updated success and will do scrape in background. Please refrush page later to view the new data.')
 
 
@@ -83,41 +90,6 @@ def do_upload():
 def settings(error_message=None, success_message=None):
     setting = get_setting()
     return dict(setting=setting, error_message=error_message, success_message=success_message)
-
-
-def get_setting():
-    conn = sqlite3.connect('data/setting.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS SETTINGS
-                 (
-                 SCHEDULE_INTERVAL INTEGER,
-                 LAST_MODIFIED_TIME TIMESTAMP)''')
-
-    settings = c.execute('SELECT * FROM SETTINGS').fetchall()
-    if len(settings) == 0:
-        c.execute('INSERT INTO SETTINGS VALUES(?, ?)', (86400, datetime.now()))
-        conn.commit()
-
-    setting = c.execute('SELECT * FROM SETTINGS').fetchone()
-    c.close()
-    conn.close()
-    return setting
-
-
-class ScrapeThread(threading.Thread):
-    def __init__(self, scraper, file):
-        self.scraper = scraper
-        self.file = file
-        threading.Thread.__init__(self)
-
-    def run(self):
-        log.debug('run the scrape process async background')
-        self.scraper.write_db(self.scraper.get_social_media(self.scraper.read_csv(self.file)),'data.db')
-
-
-def do_scrape_async(scraper, file):
-    ScrapeThread(scraper, file).start()
-
 
 @route('/settings', method='POST')
 @view('settings')
@@ -152,15 +124,11 @@ def company_chart(error_message=None, success_message=None):
     for company in companies:
         company_list.append(company[0])
 
-    if company_name and company_name != 'ALL':
-        items = c.execute(
-            'SELECT TSSH_PWR_REDUCED, TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC'
-            , (company_name, )).fetchall()
-    else:
+    if company_name == None or company_name == 'ALL':
         company_name = company_list[0]
-        items = c.execute(
-            'SELECT TSSH_PWR_REDUCED, TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC'
-            , (company_name,)).fetchall()
+    items = c.execute(
+        'SELECT TSSH_PWR_REDUCED, TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC'
+        , (company_name,)).fetchall()
     c.close()
     conn.close()
     return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
