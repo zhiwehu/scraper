@@ -59,7 +59,7 @@ def upload(success_message=None, error_message=None):
                  LAST_MODIFIED_TIME TIMESTAMP
                  )''')
 
-    csv_db_list = c.execute('SELECT * FROM CSV_DB').fetchall()
+    csv_db_list = c.execute("SELECT CSV_FILE_NAME, CSV_FILE_PATH, DB_FILE_NAME, DB_FILE_PATH, strftime('%Y-%m-%d %H:%M:%S', LAST_MODIFIED_TIME)  FROM CSV_DB").fetchall()
     c.close()
     conn.close()
     return dict(error_message=error_message, success_message= success_message, csv_db_list = csv_db_list)
@@ -145,7 +145,7 @@ def company_chart(error_message=None, success_message=None):
 
         if company_name:
             items = c.execute(
-                'SELECT TSSH_PWR_REDUCED, TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC'
+                "SELECT TSSH_PWR_REDUCED, strftime('%Y-%m-%d %H:%M:%S', TIME_TAKEN) FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC"
                 , (company_name,)).fetchall()
         c.close()
         conn.close()
@@ -187,7 +187,7 @@ def do_macro_level_chart(error_message=None, success_message=None):
         if not selected_company_list:
             selected_company_list = company_list
 
-        sql="SELECT AVG(TSSH_PWR_REDUCED), TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME IN ({company_list}) GROUP BY TIME_TAKEN".format(
+        sql="SELECT AVG(TSSH_PWR_REDUCED), strftime('%Y-%m-%d %H:%M:%S', TIME_TAKEN) FROM COMPANY WHERE COMPANY_NAME IN ({company_list}) GROUP BY strftime('%Y-%m-%d %H:%M:%S', TIME_TAKEN)".format(
             company_list=','.join(['?']*len(selected_company_list)))
         avg_company_data = c.execute(sql, selected_company_list).fetchall()
 
