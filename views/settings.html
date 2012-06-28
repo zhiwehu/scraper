@@ -1,12 +1,10 @@
 {% extends "base.html" %}
 
 {% block main %}
-    <form class="form-horizontal" id="settings_form" action="/settings" method="post" enctype="multipart/form-data">
+    <form class="form-search well" id="settings_form" action="/settings" method="post" enctype="multipart/form-data">
         <label class="file-label" for="schedule_interval">Schedule Interval (seconds), min value is 300</label>
         <input id="schedule_interval" name="schedule_interval" value="{{ setting[0] }}"/>
-
-        <div class="form-actions">
-            <button id="update_settings" type="submit" class="btn btn-info btn-large">Submit</button>
-        </div>
+        &nbsp;&nbsp;
+        <button id="update_settings" type="submit" class="btn btn-info btn-large">Submit</button>
     </form>
 {% endblock %}

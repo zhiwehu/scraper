@@ -155,24 +155,32 @@ def company_chart(error_message=None, success_message=None):
 @route('/macro_level_chart')
 @view('macro_level_chart')
 def macro_level_chart(error_message=None, success_message=None):
-    company_name = request.GET.get('company_name', None)
-    conn = sqlite3.connect('data.db')
-    c = conn.cursor()
+    csv_file_list, csv_file_name = get_csv_data(request)
 
-    companies = c.execute('SELECT DISTINCT COMPANY_NAME FROM COMPANY').fetchall()
-    company_list = []
-    for company in companies:
-        company_list.append(company[0])
+    db_file_path = get_db_path(csv_file_name)
+    items = None
+    company_list = None
+    company_name = None
+    if db_file_path:
+        company_name = request.GET.get('company_name', None)
+        conn = sqlite3.connect(db_file_path)
+        create_company_table(db_file_path)
+        c = conn.cursor()
 
-    if company_name and company_name != 'ALL':
-        items = c.execute('SELECT * FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN DESC',
-            (company_name, )).fetchall()
-    else:
-        items = c.execute('SELECT * FROM COMPANY ORDER BY TIME_TAKEN DESC').fetchall()
-    c.close()
-    conn.close()
+        companies = c.execute('SELECT DISTINCT COMPANY_NAME FROM COMPANY').fetchall()
+        company_list = []
+        for company in companies:
+            company_list.append(company[0])
+
+        if company_name and company_name != 'ALL':
+            items = c.execute('SELECT * FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC',
+                (company_name, )).fetchall()
+        else:
+            items = c.execute('SELECT * FROM COMPANY ORDER BY TIME_TAKEN ASC').fetchall()
+        c.close()
+        conn.close()
     return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
-        company_name=company_name)
+        company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name)
 
 # Call cron.reSchedule to schedule the job with default interval(86400, 1 day) when start the webapp
 import cron

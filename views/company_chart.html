@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block main %}
     <form id="form" action="/company_chart" class="form-search well">
-        <select id="csv_name" name="csv_name">
+        <select id="csv_file_name" name="csv_file_name">
             {% if csv_file_list %}
                 {% for csv in csv_file_list %}
-                    <option  {% if csv_file_name == csv_file_list %} selected="selected" {% endif %}
-                                                                     value="{{ csv }}">{{ csv }}</option>
+                    <option  {% if csv_file_name == csv %} selected="selected" {% endif %}
+                                                           value="{{ csv }}">{{ csv }}</option>
                 {% endfor %}
             {% endif %}
         </select>
@@ -48,6 +48,10 @@
     <script type="text/javascript">
         $(function () {
             $("#company_name").change(function () {
+                $("#form").submit();
+            });
+            $("#csv_file_name").change(function () {
+                $("#company_name").val("");
                 $("#form").submit();
             });
             var option = {

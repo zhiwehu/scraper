@@ -1,103 +1,123 @@
 {% extends "base.html" %}
 {% block main %}
-<form id="form" action="/" class="form">
-    <div class="control-group">
-        <div class="controls">
-            <select id="company_name" name="company_name">
-                <option value="ALL">All Company</option>
-                {% for company in companies %}
-                    <option  {% if company_name == company %} selected="selected" {% endif %} value="{{ company }}">{{ company }}</option>
+    <form id="form" action="/macro_level_chart" class="form-search well">
+        <select id="csv_file_name" name="csv_file_name">
+            {% if csv_file_list %}
+                {% for csv in csv_file_list %}
+                    <option  {% if csv_file_name == csv %} selected="selected" {% endif %}
+                                                           value="{{ csv }}">{{ csv }}</option>
                 {% endfor %}
-            </select>
-        </div>
+            {% endif %}
+        </select>
+    </form>
+    <div class="row">
+    <div class="span2">
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th><input type="checkbox" checked="checked"></th>
+                <th>Company name</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if items %}
+                {% for item in items %}
+                    <tr>
+                        <td><input value="{{ item[0] }}" type="checkbox" checked="checked"></td>
+                        <td>{{ item[0] }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
     </div>
-</form>
-<table class="table table-striped table-bordered">
-    <thead>
-    <tr>
-        <th>Company name</th>
-        <th>FB likes</th>
-        <th>FB talking about count</th>
-        <th>FB checkins</th>
-        <th>FB T/L</th>
-        <th>FB Ch/L</th>
-        <th>FB Combined</th>
-        <th>sqrt(FB_Likes)</th>
-        <th>sqrt(FBTChk)</th>
-        <th>FBHealth</th>
-        <th>TW followers</th>
-        <th>TW tweets</th>
-        <th>TW Impact</th>
-        <th>TW Engagement</th>
-        <th>TW Influence</th>
-        <th>TW Retweeted</th>
-        <th>TW KlTrueReach</th>
-        <th>TWHealth</th>
-        <th>YT subscriber count</th>
-        <th>YT view count</th>
-        <th>YT Health</th>
-        <th>TSSH Raw</th>
-        <th>TSSH PwrReduced</th>
-        <th>%FB</th>
-        <th>%TW</th>
-        <th>%YT</th>
-        <th>FB (abs)</th>
-        <th>TW (abs)</th>
-        <th>YT (abs)</th>
-        <th>Taken time</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% if items %}
-    {% for item in items %}
-    <tr>
-        <td>{{ item[0] }}</td>
-        <td>{{ item[1] }}</td>
-        <td>{{ item[2] }}</td>
-        <td>{{ item[3] }}</td>
-        <td>{{ item[4]|round(2) }}</td>
-        <td>{{ item[5]|round(2) }}</td>
-        <td>{{ item[6]|round(2) }}</td>
-        <td>{{ item[7]|round(2) }}</td>
-        <td>{{ item[8]|round(2) }}</td>
-        <td>{{ item[9]|round(2) }}</td>
-        <td>{{ item[10] }}</td>
-        <td>{{ item[11] }}</td>
-        <td>{{ item[12] }}</td>
-        <td>{{ item[13] }}</td>
-        <td>{{ item[14] }}</td>
-        <td>{{ item[15] }}</td>
-        <td>{{ item[16] }}</td>
-        <td>{{ item[17]|round(2) }}</td>
-        <td>{{ item[18] }}</td>
-        <td>{{ item[19] }}</td>
-        <td>{{ item[20]|round(2) }}</td>
-        <td>{{ item[21]|round(2) }}</td>
-        <td>{{ item[22]|round(2) }}</td>
-        <td>{{ item[23]|round(2) }}</td>
-        <td>{{ item[24]|round(2) }}</td>
-        <td>{{ item[25]|round(2) }}</td>
-        <td>{{ item[26]|round(2) }}</td>
-        <td>{{ item[27]|round(2) }}</td>
-        <td>{{ item[28]|round(2) }}</td>
-        <td>{{ item[29] }}</td>
-    </tr>
-    {% endfor %}
-    {% else %}
-    <tr>
-        <td colspan="30">No data</td>
-    </tr>
-    {% endif %}
-    </tbody>
-</table>
+    <div class="span10">
+        <div>
+            <a class="btn btn-info" href="#">Generate chart!</a>
+        </div>
+        <div id="chart"></div>
+    </div>
+    </div>
 {% endblock %}
 
 {% block ext_script %}
     <script type="text/javascript">
-    $(function() {
-        $("#company_name").change(function() {
-            $("#form").submit();
-        });
-    })
+        $(function () {
+
+            $("#csv_file_name").change(function () {
+                $("#form").submit();
+            });
+
+            chart = new Highcharts.Chart({
+                chart: {
+                    renderTo: 'chart',
+                    type: 'area'
+                },
+                title: {
+                    text: 'US and USSR nuclear stockpiles'
+                },
+                subtitle: {
+                    text: 'Source: <a href="http://thebulletin.metapress.com/content/c4120650912x74k7/fulltext.pdf">'+
+                            'thebulletin.metapress.com</a>'
+                },
+                xAxis: {
+                    labels: {
+                        formatter: function() {
+                            return this.value; // clean, unformatted number for year
+                        }
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'Nuclear weapon states'
+                    },
+                    labels: {
+                        formatter: function() {
+                            return this.value / 1000 +'k';
+                        }
+                    }
+                },
+                tooltip: {
+                    formatter: function() {
+                        return this.series.name +' produced <b>'+
+                                Highcharts.numberFormat(this.y, 0) +'</b><br/>warheads in '+ this.x;
+                    }
+                },
+                plotOptions: {
+                    area: {
+                        pointStart: 1940,
+                        marker: {
+                            enabled: false,
+                            symbol: 'circle',
+                            radius: 2,
+                            states: {
+                                hover: {
+                                    enabled: true
+                                }
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    name: 'USA',
+                    data: [null, null, null, null, null, 6 , 11, 32, 110, 235, 369, 640,
+                        1005, 1436, 2063, 3057, 4618, 6444, 9822, 15468, 20434, 24126,
+                        27387, 29459, 31056, 31982, 32040, 31233, 29224, 27342, 26662,
+                        26956, 27912, 28999, 28965, 27826, 25579, 25722, 24826, 24605,
+                        24304, 23464, 23708, 24099, 24357, 24237, 24401, 24344, 23586,
+                        22380, 21004, 17287, 14747, 13076, 12555, 12144, 11009, 10950,
+                        10871, 10824, 10577, 10527, 10475, 10421, 10358, 10295, 10104 ]
+                }, {
+                    name: 'USSR/Russia',
+                    data: [null, null, null, null, null, null, null , null , null ,null,
+                        5, 25, 50, 120, 150, 200, 426, 660, 869, 1060, 1605, 2471, 3322,
+                        4238, 5221, 6129, 7089, 8339, 9399, 10538, 11643, 13092, 14478,
+                        15915, 17385, 19055, 21205, 23044, 25393, 27935, 30062, 32049,
+                        33952, 35804, 37431, 39197, 45000, 43000, 41000, 39000, 37000,
+                        35000, 33000, 31000, 29000, 27000, 25000, 24000, 23000, 22000,
+                        21000, 20000, 19000, 18000, 18000, 17000, 16000]
+                }]
+            });
+        })
     </script>
 {% endblock %}
