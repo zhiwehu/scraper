@@ -23,10 +23,10 @@
                     </thead>
                     <tbody>
                     {% if companies %}
-                        {% for item in companies %}
+                        {% for company in companies %}
                             <tr>
-                                <td><input name="company" value="{{ item[0] }}" type="checkbox" {% if item[0] in selected_company_list %} checked="checked"{% endif %}></td>
-                                <td><a href="/?csv_file_name={{ csv_file_name }}&company_name={{ item[0] }}">{{ item[0] }}</a></td>
+                                <td><input name="company" value="{{ company }}" type="checkbox" {% if company in selected_company_list %} checked="checked"{% endif %}></td>
+                                <td><a href="/?csv_file_name={{ csv_file_name }}&company_name={{ company }}">{{ company }}</a></td>
                             </tr>
                         {% endfor %}
                     {% endif %}
