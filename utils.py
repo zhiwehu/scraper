@@ -146,7 +146,7 @@ def get_csv_data(request):
     c.close()
     conn.close()
 
-    csv_file_name = request.GET.get('csv_file_name', None)
+    csv_file_name = request.params.get('csv_file_name', None)
     if csv_file_name == None and len(csv_file_list) > 0:
         csv_file_name = csv_file_list[0]
 
