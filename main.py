@@ -87,15 +87,10 @@ class CompanySocialMedia(object):
         self.micro_metrics = micro_metrics
         self.time_taken = time_taken
 
-class Progress(object):
-    def __init__(self, total, current):
-        self.total = total
-        self.current = current
-
 class Scraper(object):
     def __init__(self):
-        self.progress = Progress(0, 0)
-
+        pass
+    
     def read_csv(self, file):
         """
             Read csv into list
@@ -137,7 +132,6 @@ class Scraper(object):
             @rtype: list
             @return: the CompanySocialMedia object list
         """
-        self.progress.total = len(company_list)
 
         # Define a progress bar on console
         limit = len(company_list)
@@ -174,7 +168,6 @@ class Scraper(object):
 
             result.append(company_sm_data)
 
-            self.progress.current += 1
             # Print a progress bar on console
             i += 1
             prog.update_amount(i)
@@ -185,17 +178,20 @@ class Scraper(object):
 
         return result
 
-    def write_db(self, company_list):
+    def write_db(self, company_list, db_filename):
         """
             write CompanySocialMedia object list into sqlite3 database
 
             @type company_list: list
             @param company_list: the CompanySocialMedia object list
 
+            @type db_filename: string
+            @param db_filename: the sqlite database file name
+
             @rtype: int
             @return: insert total count
         """
-        conn = sqlite3.connect('data.db')
+        conn = sqlite3.connect(db_filename)
         c = conn.cursor()
         # Create table
         c.execute('''CREATE TABLE IF NOT EXISTS COMPANY
@@ -282,7 +278,7 @@ if __name__ == '__main__':
     if len(args) >= 2:
         file = open(args[1], 'r')
         s = Scraper()
-        count = s.write_db(s.get_social_media(s.read_csv(file)))
+        count = s.write_db(s.get_social_media(s.read_csv(file)), 'data.db')
         print '\n'
         print '%d records has been saved to database %s' % (count, 'data.db')
     else:
