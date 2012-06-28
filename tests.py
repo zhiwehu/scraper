@@ -136,7 +136,7 @@ class ScraperTest(unittest.TestCase):
             self.assertEqual('The file is none.', e.message)
 
         # Test good format csv
-        file = open('data/good_format.csv', 'rb')
+        file = open('testdata/good_format.csv', 'rb')
         company_list = s.read_csv(file)
         self.assertTrue(len(company_list) > 0)
         list = s.get_social_media(company_list[0:1])
