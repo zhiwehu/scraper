@@ -24,7 +24,7 @@ def index(error_message=None, success_message=None):
     company_list = None
     company_name = None
     if db_file_path:
-        company_name = request.GET.get('company_name', None)
+        company_name = request.params.get('company_name', None)
         conn = sqlite3.connect(db_file_path)
         create_company_table(db_file_path)
         c = conn.cursor()
