@@ -87,7 +87,7 @@ def do_upload():
         else:
             raise Exception('The file is not format as company list')
     except Exception as e:
-        print e
+        log.error(e)
         return upload(error_message='Error: %s' % e.message)
         #return redirect('/')
     return upload(

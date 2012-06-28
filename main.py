@@ -270,6 +270,7 @@ class Scraper(object):
                 count += 1
             except Exception as e:
                 log.error(e)
+                pass
 
         conn.commit()
         c.close()
