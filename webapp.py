@@ -178,12 +178,6 @@ def do_macro_level_chart(error_message=None, success_message=None):
         for company in companies:
             company_list.append(company[0])
 
-        if company_name and company_name != 'ALL':
-            items = c.execute('SELECT * FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC',
-                (company_name, )).fetchall()
-        else:
-            items = c.execute('SELECT * FROM COMPANY ORDER BY TIME_TAKEN ASC').fetchall()
-
         if not selected_company_list:
             selected_company_list = company_list
 
@@ -193,7 +187,7 @@ def do_macro_level_chart(error_message=None, success_message=None):
 
         c.close()
         conn.close()
-    return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
+    return dict(error_message=error_message, success_message=success_message, companies=company_list,
         company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name, avg_company_data= avg_company_data, selected_company_list= selected_company_list)
 
 # Call cron.reSchedule to schedule the job with default interval(86400, 1 day) when start the webapp
