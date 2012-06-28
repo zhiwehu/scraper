@@ -26,7 +26,7 @@
                         {% for item in items %}
                             <tr>
                                 <td><input name="company" value="{{ item[0] }}" type="checkbox" {% if item[0] in selected_company_list %} checked="checked"{% endif %}></td>
-                                <td>{{ item[0] }}</td>
+                                <td><a href="/?csv_file_name={{ csv_file_name }}&company_name={{ item[0] }}">{{ item[0] }}</a></td>
                             </tr>
                         {% endfor %}
                     {% endif %}
