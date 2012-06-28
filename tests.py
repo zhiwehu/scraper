@@ -1,4 +1,5 @@
 __author__ = 'jeffrey'
+from logUtil import log
 
 import unittest
 import scraper
@@ -153,7 +154,7 @@ class ScraperTest(unittest.TestCase):
             self.assertTrue(e)
 
         # Test write db
-        s.write_db(list)
+        s.write_db(list,'data.db')
         conn = sqlite3.connect('data.db')
         c = conn.cursor()
         # Create table
