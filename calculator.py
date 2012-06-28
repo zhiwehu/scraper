@@ -16,23 +16,27 @@ def cal_fb_hm(fb_likes, fb_talking_about_count, fb_checkins):
     }
     if fb_likes == 0 and fb_talking_about_count == 0 and fb_checkins == 0:
         return fb_metrics
-    fb_tl = float(fb_talking_about_count) / float(fb_likes) * 1500
-    fb_chl = float(fb_checkins) / float(fb_likes) * 100
-    fb_combined = fb_tl + fb_chl
-    fb_likes_sqrt = float(fb_likes) ** 0.9
-    fb_tchk_sqrt = float(fb_talking_about_count + fb_checkins) ** 0.2
-    fb_health = (((fb_combined ** 0.5) * fb_likes_sqrt * fb_tchk_sqrt) / 30000000) ** 0.65
-    fb_metrics['fb_tl'] = fb_tl
-    fb_metrics['fb_chl'] = fb_chl
-    fb_metrics['fb_combined'] = fb_combined
-    fb_metrics['fb_likes_sqrt'] = fb_likes_sqrt
-    fb_metrics['fb_tchk_sqrt'] = fb_tchk_sqrt
-    fb_metrics['fb_health'] = fb_health
+    try:
+        fb_tl = float(fb_talking_about_count) / float(fb_likes) * 1500
+        fb_chl = float(fb_checkins) / float(fb_likes) * 100
+        fb_combined = fb_tl + fb_chl
+        fb_likes_sqrt = float(fb_likes) ** 0.9
+        fb_tchk_sqrt = float(fb_talking_about_count + fb_checkins) ** 0.2
+        fb_health = (((fb_combined ** 0.5) * fb_likes_sqrt * fb_tchk_sqrt) / 30000000) ** 0.65
+        fb_metrics['fb_tl'] = fb_tl
+        fb_metrics['fb_chl'] = fb_chl
+        fb_metrics['fb_combined'] = fb_combined
+        fb_metrics['fb_likes_sqrt'] = fb_likes_sqrt
+        fb_metrics['fb_tchk_sqrt'] = fb_tchk_sqrt
+        fb_metrics['fb_health'] = fb_health
+    except Exception as e:
+        log.eror(e)
+        pass
     return fb_metrics
 
 def cal_tw_hm(twitter_id, tw_followers_count, tw_tweets):
     tw_metrics = get_tw_data(twitter_id)
-    log.debug(tw_metrics)
+    #log.debug(tw_metrics)
     tw_health = (((float(tw_followers_count) ** 0.9) * ((float(tw_tweets) / 2) ** 0.2) * (
         float(tw_metrics['impact']) ** 0.3) * (float(tw_metrics['engagement']) ** 0.2) * (
     float(tw_metrics['influence']) ** 0.3) * (
