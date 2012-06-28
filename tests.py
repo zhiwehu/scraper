@@ -4,8 +4,6 @@ from logUtil import log
 import unittest
 import scraper
 import main
-import cron
-import time
 import sqlite3
 
 class ScraperTest(unittest.TestCase):
@@ -163,11 +161,13 @@ class ScraperTest(unittest.TestCase):
         c.close()
         conn.close()
 
+    """
     def testSchedule(self):
         cron.reSchedule(5)
         time.sleep(11)
         cron.reSchedule(10)
         time.sleep(21)
+    """
 
 if __name__ == '__main__':
     unittest.main()
