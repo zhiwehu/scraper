@@ -152,9 +152,15 @@ def company_chart(error_message=None, success_message=None):
     return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
         company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name)
 
-@route('/macro_level_chart')
+@route('/macro_level_chart', method='GET')
 @view('macro_level_chart')
 def macro_level_chart(error_message=None, success_message=None):
+    return do_macro_level_chart(error_message, success_message)
+
+@route('/macro_level_chart', method='POST')
+@view('macro_level_chart')
+def do_macro_level_chart(error_message=None, success_message=None):
+    selected_company_list =  request.forms.getlist('company')
     csv_file_list, csv_file_name = get_csv_data(request)
 
     db_file_path = get_db_path(csv_file_name)
@@ -177,10 +183,18 @@ def macro_level_chart(error_message=None, success_message=None):
                 (company_name, )).fetchall()
         else:
             items = c.execute('SELECT * FROM COMPANY ORDER BY TIME_TAKEN ASC').fetchall()
+
+        if not selected_company_list:
+            selected_company_list = company_list
+
+        sql="SELECT AVG(TSSH_PWR_REDUCED), TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME IN ({company_list}) GROUP BY TIME_TAKEN".format(
+            company_list=','.join(['?']*len(selected_company_list)))
+        avg_company_data = c.execute(sql, selected_company_list).fetchall()
+
         c.close()
         conn.close()
     return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
-        company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name)
+        company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name, avg_company_data= avg_company_data)
 
 # Call cron.reSchedule to schedule the job with default interval(86400, 1 day) when start the webapp
 import cron

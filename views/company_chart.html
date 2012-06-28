@@ -35,7 +35,7 @@
             {% endfor %}
         {% else %}
             <tr>
-                <td colspan="3">No data</td>
+                <td colspan="2">No data</td>
             </tr>
         {% endif %}
         </tbody>
@@ -63,7 +63,7 @@
                     text:'TSSH_PWR_REDUCED chart of {{ company_name }}'
                 },
                 subtitle:{
-                    text:'<a href="/?company_name={{ company_name }}">Source data</a>'
+                    text:'<a href="/?csv_file_name={{ csv_file_name }}&company_name={{ company_name }}">Source data</a>'
                 },
                 xAxis:{
                     categories:[],

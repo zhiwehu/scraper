@@ -11,32 +11,57 @@
         </select>
     </form>
     <div class="row">
-    <div class="span2">
-        <table class="table table-striped table-bordered">
-            <thead>
-            <tr>
-                <th><input type="checkbox" checked="checked"></th>
-                <th>Company name</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% if items %}
-                {% for item in items %}
+        <div class="span2">
+            <form id="company_form" action="/macro_level_chart" method="POST" enctype="multipart/form-data">
+                <table class="table table-striped table-bordered">
+                    <thead>
                     <tr>
-                        <td><input value="{{ item[0] }}" type="checkbox" checked="checked"></td>
-                        <td>{{ item[0] }}</td>
+                        <th><input id="all_company" type="checkbox" checked="checked"></th>
+                        <th>Company name</th>
                     </tr>
-                {% endfor %}
-            {% endif %}
-            </tbody>
-        </table>
-    </div>
-    <div class="span10">
-        <div>
-            <a class="btn btn-info" href="#">Generate chart!</a>
+                    </thead>
+                    <tbody>
+                    {% if items %}
+                        {% for item in items %}
+                            <tr>
+                                <td><input name="company" value="{{ item[0] }}" type="checkbox" checked="checked"></td>
+                                <td>{{ item[0] }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </form>
         </div>
-        <div id="chart"></div>
-    </div>
+        <div class="span10">
+            <div>
+                <a id="submit_chart" class="btn btn-info" href="#">Generate chart!</a>
+            </div>
+            <p></p>
+            <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th>Average TSSH PwrReduced</th>
+                    <th>Taken time</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if avg_company_data %}
+                    {% for item in avg_company_data %}
+                        <tr>
+                            <td class="tssh_data">{{ item[0]|round(2) }}</td>
+                            <td class="time_taken">{{ item[1] }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="2">No data</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+            <div id="company_chart"></div>
+        </div>
     </div>
 {% endblock %}
 
@@ -47,77 +72,72 @@
             $("#csv_file_name").change(function () {
                 $("#form").submit();
             });
+            $("#submit_chart").click(function() {
+                $("#company_form").submit();
+            });
 
-            chart = new Highcharts.Chart({
-                chart: {
-                    renderTo: 'chart',
-                    type: 'area'
+            var option = {
+                chart:{
+                    renderTo:'company_chart',
+                    type:'area'
                 },
-                title: {
-                    text: 'US and USSR nuclear stockpiles'
+                title:{
+                    text:'Average TSSH_PWR_REDUCED chart'
                 },
-                subtitle: {
-                    text: 'Source: <a href="http://thebulletin.metapress.com/content/c4120650912x74k7/fulltext.pdf">'+
-                            'thebulletin.metapress.com</a>'
-                },
-                xAxis: {
-                    labels: {
-                        formatter: function() {
-                            return this.value; // clean, unformatted number for year
+                xAxis:{
+                    categories:[],
+                    labels:{
+                        formatter:function () {
+                            return this.value;
                         }
                     }
                 },
-                yAxis: {
-                    title: {
-                        text: 'Nuclear weapon states'
+                yAxis:{
+                    title:{
+                        text:'Average TSSH_PWR_REDUCED'
                     },
-                    labels: {
-                        formatter: function() {
-                            return this.value / 1000 +'k';
+                    labels:{
+                        formatter:function () {
+                            return this.value;
                         }
                     }
                 },
-                tooltip: {
-                    formatter: function() {
-                        return this.series.name +' produced <b>'+
-                                Highcharts.numberFormat(this.y, 0) +'</b><br/>warheads in '+ this.x;
+                tooltip:{
+                    formatter:function () {
+                        return this.y;
                     }
                 },
-                plotOptions: {
-                    area: {
-                        pointStart: 1940,
-                        marker: {
-                            enabled: false,
-                            symbol: 'circle',
-                            radius: 2,
-                            states: {
-                                hover: {
-                                    enabled: true
+                plotOptions:{
+                    pointStart:'',
+                    area:{
+                        marker:{
+                            enabled:false,
+                            symbol:'circle',
+                            radius:2,
+                            states:{
+                                hover:{
+                                    enabled:true
                                 }
                             }
                         }
                     }
                 },
-                series: [{
-                    name: 'USA',
-                    data: [null, null, null, null, null, 6 , 11, 32, 110, 235, 369, 640,
-                        1005, 1436, 2063, 3057, 4618, 6444, 9822, 15468, 20434, 24126,
-                        27387, 29459, 31056, 31982, 32040, 31233, 29224, 27342, 26662,
-                        26956, 27912, 28999, 28965, 27826, 25579, 25722, 24826, 24605,
-                        24304, 23464, 23708, 24099, 24357, 24237, 24401, 24344, 23586,
-                        22380, 21004, 17287, 14747, 13076, 12555, 12144, 11009, 10950,
-                        10871, 10824, 10577, 10527, 10475, 10421, 10358, 10295, 10104 ]
-                }, {
-                    name: 'USSR/Russia',
-                    data: [null, null, null, null, null, null, null , null , null ,null,
-                        5, 25, 50, 120, 150, 200, 426, 660, 869, 1060, 1605, 2471, 3322,
-                        4238, 5221, 6129, 7089, 8339, 9399, 10538, 11643, 13092, 14478,
-                        15915, 17385, 19055, 21205, 23044, 25393, 27935, 30062, 32049,
-                        33952, 35804, 37431, 39197, 45000, 43000, 41000, 39000, 37000,
-                        35000, 33000, 31000, 29000, 27000, 25000, 24000, 23000, 22000,
-                        21000, 20000, 19000, 18000, 18000, 17000, 16000]
-                }]
+                series:[
+                    {
+                        name:'Selected companies',
+                        data:[]
+                    }
+                ]
+            };
+            $('.time_taken').each(function () {
+                option.xAxis.categories.push(this.innerHTML)
             });
+
+            $('.tssh_data').each(function () {
+                option.series[0].data.push(parseFloat(this.innerHTML));
+            });
+            option.plotOptions.pointStart = option.xAxis.categories[0];
+            var chart = new Highcharts.Chart(option);
         })
     </script>
 {% endblock %}
