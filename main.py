@@ -104,6 +104,7 @@ class Scraper(object):
         if not file:
             raise Exception('The file is none.')
 
+        print file
         company_list = []
         reader = csv.reader(file)
 
@@ -121,6 +122,7 @@ class Scraper(object):
 
         if close:
             file.close()
+        print company_list
         return company_list
 
     def get_social_media(self, company_list):
@@ -279,9 +281,9 @@ if __name__ == '__main__':
     if len(args) >= 2:
         file = open(args[1], 'r')
         s = Scraper()
-        count = s.write_db(s.get_social_media(s.read_csv(file)), 'data.db')
+        count = s.write_db(s.get_social_media(s.read_csv(file)), 'data/data.db')
         print '\n'
-        print '%d records has been saved to database %s' % (count, 'data.db')
+        print '%d records has been saved to database %s' % (count, 'data/data.db')
     else:
         print 'Please input the file name as the first parameter.'
     log.info('end')

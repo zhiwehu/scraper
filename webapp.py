@@ -17,24 +17,32 @@ def send_static(filename):
 @route('/')
 @view('index')
 def index(error_message=None, success_message=None):
-    company_name = request.GET.get('company_name', None)
-    conn = sqlite3.connect('data.db')
-    c = conn.cursor()
+    csv_file_list, csv_file_name = get_csv_data(request)
 
-    companies = c.execute('SELECT DISTINCT COMPANY_NAME FROM COMPANY').fetchall()
-    company_list = []
-    for company in companies:
-        company_list.append(company[0])
+    db_file_path = get_db_path(csv_file_name)
+    items = None
+    company_list = None
+    company_name = None
+    if db_file_path:
+        company_name = request.GET.get('company_name', None)
+        conn = sqlite3.connect(db_file_path)
+        create_company_table(db_file_path)
+        c = conn.cursor()
 
-    if company_name and company_name != 'ALL':
-        items = c.execute('SELECT * FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN DESC',
-            (company_name, )).fetchall()
-    else:
-        items = c.execute('SELECT * FROM COMPANY ORDER BY TIME_TAKEN DESC').fetchall()
-    c.close()
-    conn.close()
+        companies = c.execute('SELECT DISTINCT COMPANY_NAME FROM COMPANY').fetchall()
+        company_list = []
+        for company in companies:
+            company_list.append(company[0])
+
+        if company_name and company_name != 'ALL':
+            items = c.execute('SELECT * FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC',
+                (company_name, )).fetchall()
+        else:
+            items = c.execute('SELECT * FROM COMPANY ORDER BY TIME_TAKEN ASC').fetchall()
+        c.close()
+        conn.close()
     return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
-        company_name=company_name)
+        company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name)
 
 
 @route('/upload', method='GET')
@@ -54,7 +62,7 @@ def upload(success_message=None, error_message=None):
     csv_db_list = c.execute('SELECT * FROM CSV_DB').fetchall()
     c.close()
     conn.close()
-    return dict(error_message=error_message, csv_db_list = csv_db_list)
+    return dict(error_message=error_message, success_message= success_message, csv_db_list = csv_db_list)
 
 @route('/upload', method='POST')
 @view('upload')
@@ -67,12 +75,13 @@ def do_upload():
         company_list = s.read_csv(csvfile.file)
         if len(company_list) > 0:
             # Save the file
-            f = open('%s/data/%s' % (WEB_ROOT, csvfile.filename), 'w')
+            f = open('%s/data/%s' % (WEB_ROOT, csvfile.filename), 'wb')
             f.write(csvfile.value)
+            f.seek(0)
+
             # Save to CSV_FILE db
             csv_file_path, db_file_path = save_csv_db(csvfile)
             # Run the scrape process in background
-            f = open('%s/%s' % (WEB_ROOT, csvfile.filename), 'r')
             # TODO just upload, not scrape
             do_scrape_async(s, csv_file_path, db_file_path)
         else:
@@ -99,7 +108,7 @@ def do_settings():
         schedule_interval = int(schedule_interval)
         if schedule_interval < 300:
             raise Exception('The min schedule interval should be more than 300 seconds')
-        conn = sqlite3.connect('data.db')
+        conn = sqlite3.connect('data/setting.db')
         c = conn.cursor()
         c.execute('UPDATE SETTINGS SET SCHEDULE_INTERVAL = ?, LAST_MODIFIED_TIME = ?',
             (schedule_interval, datetime.now()))
@@ -117,22 +126,31 @@ def do_settings():
 @view('company_chart')
 def company_chart(error_message=None, success_message=None):
     company_name = request.GET.get('company_name', None)
-    conn = sqlite3.connect('data.db')
-    c = conn.cursor()
-    companies = c.execute('SELECT DISTINCT COMPANY_NAME FROM COMPANY').fetchall()
-    company_list = []
-    for company in companies:
-        company_list.append(company[0])
 
-    if company_name == None or company_name == 'ALL':
-        company_name = company_list[0]
-    items = c.execute(
-        'SELECT TSSH_PWR_REDUCED, TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC'
-        , (company_name,)).fetchall()
-    c.close()
-    conn.close()
+    csv_file_list, csv_file_name = get_csv_data(request)
+    db_file_path = get_db_path(csv_file_name)
+
+    items = None
+    company_list = None
+    if db_file_path:
+        conn = sqlite3.connect(db_file_path)
+        c = conn.cursor()
+        companies = c.execute('SELECT DISTINCT COMPANY_NAME FROM COMPANY').fetchall()
+        company_list = []
+        for company in companies:
+            company_list.append(company[0])
+
+        if (company_name == None or company_name == 'ALL') and len(company_list)>0:
+            company_name = company_list[0]
+
+        if company_name:
+            items = c.execute(
+                'SELECT TSSH_PWR_REDUCED, TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC'
+                , (company_name,)).fetchall()
+        c.close()
+        conn.close()
     return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
-        company_name=company_name)
+        company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name)
 
 @route('/macro_level_chart')
 @view('macro_level_chart')

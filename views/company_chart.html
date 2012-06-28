@@ -1,16 +1,22 @@
 {% extends "base.html" %}
 {% block main %}
-    <form id="form" action="/company_chart" class="form">
-        <div class="control-group">
-            <div class="controls">
-                <select id="company_name" name="company_name">
-                    {% for company in companies %}
-                        <option  {% if company_name == company %} selected="selected" {% endif %}
-                                                                  value="{{ company }}">{{ company }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
+    <form id="form" action="/company_chart" class="form-search well">
+        <select id="csv_name" name="csv_name">
+            {% if csv_file_list %}
+                {% for csv in csv_file_list %}
+                    <option  {% if csv_file_name == csv_file_list %} selected="selected" {% endif %}
+                                                                     value="{{ csv }}">{{ csv }}</option>
+                {% endfor %}
+            {% endif %}
+        </select>
+        <select id="company_name" name="company_name">
+            {% if companies %}
+                {% for company in companies %}
+                    <option  {% if company_name == company %} selected="selected" {% endif %}
+                                                              value="{{ company }}">{{ company }}</option>
+                {% endfor %}
+            {% endif %}
+        </select>
     </form>
     <table class="table table-striped table-bordered">
         <thead>
@@ -56,7 +62,7 @@
                     text:'<a href="/?company_name={{ company_name }}">Source data</a>'
                 },
                 xAxis:{
-                    categories: [],
+                    categories:[],
                     labels:{
                         formatter:function () {
                             return this.value;
@@ -79,7 +85,7 @@
                     }
                 },
                 plotOptions:{
-                    pointStart: '',
+                    pointStart:'',
                     area:{
                         marker:{
                             enabled:false,
@@ -100,11 +106,11 @@
                     }
                 ]
             };
-            $('.time_taken').each(function() {
+            $('.time_taken').each(function () {
                 option.xAxis.categories.push(this.innerHTML)
             });
 
-            $('.tssh_data').each(function() {
+            $('.tssh_data').each(function () {
                 option.series[0].data.push(parseFloat(this.innerHTML));
             });
             option.plotOptions.pointStart = option.xAxis.categories[0];

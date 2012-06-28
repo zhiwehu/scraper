@@ -31,12 +31,36 @@ class ScrapeThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        f = open(self.csv_file_path, 'r')
+        f = open(self.csv_file_path, 'rb')
         self.scraper.write_db(self.scraper.get_social_media(self.scraper.read_csv(f, close=True)),self.db_file_path)
 
 
 def do_scrape_async(scraper, csv_file_path, db_file_path):
     ScrapeThread(scraper, csv_file_path, db_file_path).start()
+
+def get_db_path(csv_name):
+    if csv_name == None:
+        return None
+
+    conn = sqlite3.connect('data/setting.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS CSV_DB
+                 (
+                 CSV_FILE_NAME TEXT,
+                 CSV_FILE_PATH TEXT,
+                 DB_FILE_NAME TEXT,
+                 DB_FILE_PATH TEXT,
+                 LAST_MODIFIED_TIME TIMESTAMP
+                 )''')
+
+    csv = c.execute('SELECT DB_FILE_PATH FROM CSV_DB WHERE CSV_FILE_NAME = ?', (csv_name.strip(), )).fetchone()
+    c.close()
+    conn.close()
+
+    if csv:
+        return csv[0]
+    else:
+        return None
 
 def save_csv_db(csvfile):
     csv_file_name = csvfile.filename.split('.')[0]
@@ -62,3 +86,68 @@ def save_csv_db(csvfile):
     conn.close()
 
     return 'data/%s' % csvfile.filename, 'data/%s' % db_file_name
+
+def create_company_table(db_file_path):
+    conn = sqlite3.connect(db_file_path)
+    c = conn.cursor()
+    # Create table
+    c.execute('''CREATE TABLE IF NOT EXISTS COMPANY
+                 (
+                 COMPANY_NAME TEXT,
+                 FB_LIKES INTEGER,
+                 FB_TALKING_ABOUT_COUNT INTEGER,
+                 FB_CHECKINS INTEGER,
+                 FB_TL REAL,
+                 FB_CHL REAL,
+                 FB_COMBINED REAL,
+                 FB_LIKES_SQRT REAL,
+                 FB_TCHK_SQRT REAL,
+                 FB_HEALTH REAL,
+                 TW_FOLLOWERS_COUNT INTEGER,
+                 TW_TWEETS INTEGER,
+                 TW_IMPACT REAL,
+                 TW_ENGAGEMENT REAL,
+                 TW_INFLUENCE REAL,
+                 TW_RETWEETED REAL,
+                 TW_KLOUT_TRUEREACH REAL,
+                 TW_HEALTH REAL,
+                 YT_SUBSCRIBER_COUNT INTEGER,
+                 YT_VIEW_COUNT INTEGER,
+                 YT_HEALTH REAL,
+                 TSSH_RAW REAL,
+                 TSSH_PWR_REDUCED REAL,
+                 FB_PERCENT REAL,
+                 TW_PERCENT REAL,
+                 YT_PERCENT REAL,
+                 FB_ABS REAL,
+                 TW_ABS REAL,
+                 YT_ABS REAL,
+                 TIME_TAKEN TIMESTAMP
+                 )''')
+    conn.commit()
+    c.close()
+    conn.close()
+
+def get_csv_data(request):
+    conn = sqlite3.connect('data/setting.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS CSV_DB
+                 (
+                 CSV_FILE_NAME TEXT,
+                 CSV_FILE_PATH TEXT,
+                 DB_FILE_NAME TEXT,
+                 DB_FILE_PATH TEXT,
+                 LAST_MODIFIED_TIME TIMESTAMP
+                 )''')
+    csv_files = c.execute('SELECT CSV_FILE_NAME FROM CSV_DB').fetchall()
+    csv_file_list = []
+    for csv in csv_files:
+        csv_file_list.append(csv[0])
+    c.close()
+    conn.close()
+
+    csv_file_name = request.GET.get('csv_file_name', None)
+    if csv_file_name == None and len(csv_file_list) > 0:
+        csv_file_name = csv_file_list[0]
+
+    return csv_file_list, csv_file_name
