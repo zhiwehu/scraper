@@ -18,7 +18,7 @@
             {% endif %}
         </select>
     </form>
-    <h2>Company name: <a class="company_url" href="{{ company_name }}">{{ company_name }}</a>
+    <h2>Company name: <a class="company_url" rel="{{ company_name }}" href="/?csv_file_name={{ csv_file_name }}&company_name={{ company_name }}">{{ company_name }}</a>
         <a class="btn btn-info" href="#company_chart"><i class="icon-picture icon-white"></i> View chart</a>
     </h2>
 
@@ -60,7 +60,7 @@
             });
 
             $("a.company_url").click(function() {
-                company_name = $(this).attr("href");
+                company_name = $(this).attr("rel");
                 company_name = company_name.replace("&", "%26");
                 url = "/?csv_file_name=" + "{{ csv_file_name }}" +"&company_name=" + company_name;
                 window.location.href=url;
