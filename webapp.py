@@ -294,6 +294,29 @@ def export():
 def error404(error):
     return '404 Not found.'
 
+@route('/rescrape')
+def re_scrape_schedule():
+    conn = sqlite3.connect('data/setting.db')
+    c = conn.cursor()
+    schedule_interval = c.execute('SELECT SCHEDULE_INTERVAL FROM SETTINGS').fetchone()[0]
+    c.close()
+    conn.close()
+
+    conn = sqlite3.connect('data/setting.db')
+    c = conn.cursor()
+    csv_db_file_list = c.execute('SELECT CSV_FILE_PATH, DB_FILE_PATH FROM CSV_DB').fetchall()
+    c.close()
+    conn.close()
+    for item in csv_db_file_list:
+        csv_path = item[0]
+        db_path  = item[1]
+        s = Scraper()
+        thread = ScrapeThread(s,csv_path, db_path)
+        thread.start()
+    # Re schedule with new interval seconds
+    cron.reSchedule(seconds=schedule_interval)
+    return settings(success_message='The cron job has been started in background and rescheduled.')
+
 # Call cron.reSchedule to schedule the job with default interval(86400, 1 day) when start the webapp
 import cron
 
