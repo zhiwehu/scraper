@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block main %}
-    <form class="form-search well" id="upload_form" action="/upload" method="post" enctype="multipart/form-data">
+    <form class="form-search well" id="upload_form" action="/csv/upload" method="post" enctype="multipart/form-data">
         <label class="file-label" for="csvfile">CSV file</label>
         <input type="file" id="csvfile" name="csvfile"/>
         &nbsp;&nbsp;
@@ -15,6 +15,7 @@
             <th>DB File</th>
             <th>DB Path</th>
             <th>Last modified time</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
@@ -26,14 +27,31 @@
                     <td>{{ item[2] }}</td>
                     <td>{{ item[3] }}</td>
                     <td>{{ item[4] }}</td>
+                    <td>
+                        <a class="btn btn-small btn-primary" href="/csv/download/{{ item[0] }}"><i class="icon-download icon-white"></i> download</a>
+                        <a id="delete_csv" class="btn btn-small btn-danger" href="/csv/delete/{{ item[0] }}"><i class="icon-remove icon-white"></i> delete</a>
+                    </td>
                 </tr>
             {% endfor %}
         {% else %}
             <tr>
-                <td colspan="5">No data</td>
+                <td colspan="6">No data</td>
             </tr>
         {% endif %}
         </tbody>
     </table>
 
+{% endblock %}
+
+{% block ext_script %}
+    <script type="text/javascript">
+        $(function () {
+            $("#delete_csv").click(function() {
+                if (confirm("Are you sure?")) {
+                    window.location.href = $(this).attr("href");
+                }
+                return false;
+            });
+        })
+    </script>
 {% endblock %}
