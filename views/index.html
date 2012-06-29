@@ -58,7 +58,7 @@
         {% if items %}
             {% for item in items %}
                 <tr>
-                    <td><a href="/company_chart?csv_file_name={{ csv_file_name }}&company_name={{ item[0] }}">{{ item[0] }}</a></td>
+                    <td><a class="company_url" href="{{ item[0] }}">{{ item[0] }}</a></td>
                     <td>{{ item[1] }}</td>
                     <td>{{ item[2] }}</td>
                     <td>{{ item[3] }}</td>
@@ -109,6 +109,14 @@
             $("#csv_file_name").change(function () {
                 $("#company_name").val("");
                 $("#form").submit();
+            });
+
+            $("a .company_url").click(function() {
+                company_name = $(this).attr("href");
+                company_name = company_name.replace("&", "%26");
+                url = "/company_chart?csv_file_name=" + "{{ csv_file_name }}" +"&company_name=" + company_name;
+                window.location.href=url;
+                return false
             });
         })
     </script>

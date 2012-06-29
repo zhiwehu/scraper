@@ -18,7 +18,10 @@
             {% endif %}
         </select>
     </form>
-    <h2>Company name: <a href="/?csv_file_name={{ csv_file_name }}&company_name={{ company_name }}">{{ company_name }}</a></h2>
+    <h2>Company name: <a class="company_url" href="{{ company_name }}">{{ company_name }}</a>
+        <a class="btn btn-info" href="#company_chart"><i class="icon-picture icon-white"></i> View chart</a>
+    </h2>
+
     <table class="table table-striped table-bordered">
         <thead>
         <tr>
@@ -54,6 +57,14 @@
             $("#csv_file_name").change(function () {
                 $("#company_name").val("");
                 $("#form").submit();
+            });
+
+            $("a .company_url").click(function() {
+                company_name = $(this).attr("href");
+                company_name = company_name.replace("&", "%26");
+                url = "/?csv_file_name=" + "{{ csv_file_name }}" +"&company_name=" + company_name;
+                window.location.href=url;
+                return false
             });
 
             var option = {
