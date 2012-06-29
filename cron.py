@@ -3,6 +3,8 @@ __author__ = 'jeffrey'
 from apscheduler.scheduler import Scheduler
 from main import Scraper
 from logUtil import log
+import sqlite3
+from utils import ScrapeThread
 
 sched = Scheduler()
 sched.start()
@@ -11,10 +13,27 @@ def doJob():
     '''
         Do the scrape every interval time
     '''
-    file = open('data/good_format.csv')
-    s = Scraper()
-    count = s.write_db(s.get_social_media(s.read_csv(file)),'data.db')
-    log.info('%d records has been saved to database %s' % (count, 'data.db'))
+    #get all csv and db paths
+    conn = sqlite3.connect('data/setting.db')
+    c = conn.cursor()
+    csv_db_file_list = c.execute('SELECT CSV_FILE_PATH, DB_FILE_PATH FROM CSV_DB').fetchall()
+    c.close()
+    conn.close()
+    threads = []
+    for item in csv_db_file_list:
+        csv_path = item[0]
+        db_path  = item[1]
+        s = Scraper()
+        thread = ScrapeThread(s,csv_path, db_path)
+        thread.start()
+        threads.append(thread)
+
+    # Wait for all threads to complete
+    for t in threads:
+        t.join()
+
+    log.info('all scraper threads finished in doJob()')
+    return
 
 def reSchedule(seconds=86400):
     '''
