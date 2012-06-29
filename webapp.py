@@ -14,6 +14,7 @@ WEB_ROOT = os.path.abspath(os.path.dirname(__file__))
 def send_static(filename):
     return static_file(filename, root=os.path.join(WEB_ROOT, 'static'))
 
+
 @route('/')
 @view('index')
 def index(error_message=None, success_message=None):
@@ -59,10 +60,12 @@ def upload(success_message=None, error_message=None):
                  LAST_MODIFIED_TIME TIMESTAMP
                  )''')
 
-    csv_db_list = c.execute('SELECT * FROM CSV_DB').fetchall()
+    csv_db_list = c.execute(
+        "SELECT CSV_FILE_NAME, CSV_FILE_PATH, DB_FILE_NAME, DB_FILE_PATH, strftime('%Y-%m-%d %H:%M:%S', LAST_MODIFIED_TIME)  FROM CSV_DB").fetchall()
     c.close()
     conn.close()
-    return dict(error_message=error_message, success_message= success_message, csv_db_list = csv_db_list)
+    return dict(error_message=error_message, success_message=success_message, csv_db_list=csv_db_list)
+
 
 @route('/upload', method='POST')
 @view('upload')
@@ -87,7 +90,7 @@ def do_upload():
         else:
             raise Exception('The file is not format as company list')
     except Exception as e:
-        print e
+        log.error(e)
         return upload(error_message='Error: %s' % e.message)
         #return redirect('/')
     return upload(
@@ -99,6 +102,7 @@ def do_upload():
 def settings(error_message=None, success_message=None):
     setting = get_setting()
     return dict(setting=setting, error_message=error_message, success_message=success_message)
+
 
 @route('/settings', method='POST')
 @view('settings')
@@ -140,27 +144,29 @@ def company_chart(error_message=None, success_message=None):
         for company in companies:
             company_list.append(company[0])
 
-        if (company_name == None or company_name == 'ALL') and len(company_list)>0:
+        if (company_name == None or company_name == 'ALL') and len(company_list) > 0:
             company_name = company_list[0]
 
         if company_name:
             items = c.execute(
-                'SELECT TSSH_PWR_REDUCED, TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC'
+                "SELECT TSSH_PWR_REDUCED, strftime('%Y-%m-%d %H:%M', TIME_TAKEN) FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC"
                 , (company_name,)).fetchall()
         c.close()
         conn.close()
     return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
         company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name)
 
+
 @route('/macro_level_chart', method='GET')
 @view('macro_level_chart')
 def macro_level_chart(error_message=None, success_message=None):
     return do_macro_level_chart(error_message, success_message)
 
+
 @route('/macro_level_chart', method='POST')
 @view('macro_level_chart')
 def do_macro_level_chart(error_message=None, success_message=None):
-    selected_company_list =  request.forms.getlist('company')
+    selected_company_list = request.forms.getlist('company')
     csv_file_list, csv_file_name = get_csv_data(request)
 
     db_file_path = get_db_path(csv_file_name)
@@ -178,23 +184,18 @@ def do_macro_level_chart(error_message=None, success_message=None):
         for company in companies:
             company_list.append(company[0])
 
-        if company_name and company_name != 'ALL':
-            items = c.execute('SELECT * FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC',
-                (company_name, )).fetchall()
-        else:
-            items = c.execute('SELECT * FROM COMPANY ORDER BY TIME_TAKEN ASC').fetchall()
-
         if not selected_company_list:
             selected_company_list = company_list
 
-        sql="SELECT AVG(TSSH_PWR_REDUCED), TIME_TAKEN FROM COMPANY WHERE COMPANY_NAME IN ({company_list}) GROUP BY TIME_TAKEN".format(
-            company_list=','.join(['?']*len(selected_company_list)))
+        sql = "SELECT AVG(TSSH_PWR_REDUCED), strftime('%Y-%m-%d %H:%M', TIME_TAKEN) FROM COMPANY WHERE COMPANY_NAME IN ({company_list}) GROUP BY strftime('%Y-%m-%d %H:%M:%S', TIME_TAKEN)".format(
+            company_list=','.join(['?'] * len(selected_company_list)))
         avg_company_data = c.execute(sql, selected_company_list).fetchall()
 
         c.close()
         conn.close()
-    return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
-        company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name, avg_company_data= avg_company_data, selected_company_list= selected_company_list)
+    return dict(error_message=error_message, success_message=success_message, companies=company_list,
+        company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name,
+        avg_company_data=avg_company_data, selected_company_list=selected_company_list)
 
 # Call cron.reSchedule to schedule the job with default interval(86400, 1 day) when start the webapp
 import cron

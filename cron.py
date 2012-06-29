@@ -48,6 +48,7 @@ def reSchedule(seconds=86400):
     log.debug('job reschedule seconds %d' % seconds)
     try:
         sched.unschedule_func(doJob)
-    except:
+    except Exception as e:
+        log.error(e)
         pass
     sched.add_interval_job(doJob, seconds=seconds)

@@ -157,6 +157,7 @@ class Scraper(object):
             company_sm_data.yt_subscriber_count = yt_data['subscriber_count']
             company_sm_data.yt_view_count = yt_data['view_count']
 
+            log.debug('%d, %d, %d' % (company_sm_data.fb_likes, company_sm_data.fb_talking_about_count, company_sm_data.fb_checkins))
             fb_metrics = calculator.cal_fb_hm(company_sm_data.fb_likes, company_sm_data.fb_talking_about_count, company_sm_data.fb_checkins)
             tw_metrics = calculator.cal_tw_hm(tw_data['twitter_id'], company_sm_data.tw_followers_count, company_sm_data.tw_tweets)
             yt_metrics = calculator.cal_yt_hm(company_sm_data.yt_subscriber_count, company_sm_data.yt_view_count)
@@ -269,6 +270,7 @@ class Scraper(object):
                 count += 1
             except Exception as e:
                 log.error(e)
+                pass
 
         conn.commit()
         c.close()
