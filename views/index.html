@@ -111,7 +111,7 @@
                 $("#form").submit();
             });
 
-            $("a .company_url").click(function() {
+            $("a.company_url").click(function() {
                 company_name = $(this).attr("href");
                 company_name = company_name.replace("&", "%26");
                 url = "/company_chart?csv_file_name=" + "{{ csv_file_name }}" +"&company_name=" + company_name;
