@@ -1,7 +1,8 @@
 __author__ = 'jeffrey'
 
+import csv
 import sqlite3
-from bottle import route, run, debug, static_file, jinja2_view as view, request, redirect
+from bottle import route, run, debug, static_file, jinja2_view as view, request, response, error, redirect
 import os.path
 from datetime import datetime
 
@@ -196,6 +197,28 @@ def do_macro_level_chart(error_message=None, success_message=None):
     return dict(error_message=error_message, success_message=success_message, companies=company_list,
         company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name,
         avg_company_data=avg_company_data, selected_company_list=selected_company_list)
+
+@route('/export')
+def export():
+    csv_file_name = request.params.get('csv_file_name', None)
+    db_file_path = get_db_path(csv_file_name)
+    if db_file_path == None:
+        response.status = 404
+
+    conn = sqlite3.connect(db_file_path)
+    c = conn.cursor()
+
+    companies = c.execute('SELECT * FROM COMPANY').fetchall()
+    c.close()
+    conn.close()
+
+    response.content_type= 'text/csv'
+    response['Content-Disposition'] = 'attachment; filename=%s.csv' % csv_file_name
+    return open('data/Big_company.csv', 'rb ')
+
+@error(404)
+def error404(error):
+    return '404 Not found.'
 
 # Call cron.reSchedule to schedule the job with default interval(86400, 1 day) when start the webapp
 import cron
