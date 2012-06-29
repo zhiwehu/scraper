@@ -6,6 +6,8 @@ from bottle import route, run, debug, static_file, jinja2_view as view, request,
 import os.path
 from datetime import datetime
 
+import uuid
+
 from main import Scraper
 from utils import *
 
@@ -217,25 +219,76 @@ def do_macro_level_chart(error_message=None, success_message=None):
         company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name, avg_company_data= avg_company_data, selected_company_list= selected_company_list)
 
 @route('/export')
+@view('export')
 def export():
-    '''
     csv_file_name = request.params.get('csv_file_name', None)
-    db_file_path = get_db_path(csv_file_name)
-    if db_file_path == None:
-        response.status = 404
+    if csv_file_name:
+        db_file_path = get_db_path(csv_file_name)
+        if db_file_path == None:
+            return HTTPError(code=404)
 
-    conn = sqlite3.connect(db_file_path)
-    c = conn.cursor()
+        conn = sqlite3.connect(db_file_path)
+        c = conn.cursor()
 
-    companies = c.execute('SELECT * FROM COMPANY').fetchall()
-    c.close()
-    conn.close()
+        companies = c.execute('SELECT * FROM COMPANY').fetchall()
+        c.close()
+        conn.close()
 
-    response.content_type= 'text/csv'
-    response['Content-Disposition'] = 'attachment; filename=%s.csv' % csv_file_name
-    return open('data/Big_company.csv', 'rb ')
-    '''
-    pass
+        unique_filename = uuid.uuid4()
+        write = UnicodeWriter(f=open('data/%s.csv' % unique_filename, 'wb'))
+        write.writerow(['COMPANY_NAME',
+                        'FB_LIKES',
+                        'FB_TALKING_ABOUT_COUNT',
+                        'FB_CHECKINS',
+                        'FB_TL',
+                        'FB_CHL',
+                        'FB_COMBINED',
+                        'FB_LIKES_SQRT',
+                        'FB_TCHK_SQRT',
+                        'FB_HEALTH REAL',
+                        'TW_FOLLOWERS_COUNT',
+                        'TW_TWEETS',
+                        'TW_IMPACT',
+                        'TW_ENGAGEMENT',
+                        'TW_INFLUENCE',
+                        'TW_RETWEETED',
+                        'TW_KLOUT_TRUEREACH',
+                        'TW_HEALTH',
+                        'YT_SUBSCRIBER_COUNT',
+                        'YT_VIEW_COUNT',
+                        'YT_HEALTH',
+                        'TSSH_RAW',
+                        'TSSH_PWR_REDUCED',
+                        'FB_PERCENT',
+                        'TW_PERCENT',
+                        'YT_PERCENT',
+                        'FB_ABS',
+                        'TW_ABS',
+                        'YT_ABS',
+                        'TIME_TAKEN'])
+        write.writerows(companies)
+
+        response.content_type= 'text/csv'
+        response['Content-Disposition'] = 'attachment; filename=%s_db.csv' % csv_file_name
+        f = open('data/%s.csv' % unique_filename, 'rb')
+        os.remove('data/%s.csv' % unique_filename)
+        return f
+    else:
+        conn = sqlite3.connect('data/setting.db')
+        c = conn.cursor()
+        c.execute('''CREATE TABLE IF NOT EXISTS CSV_DB
+                     (
+                     CSV_FILE_NAME TEXT,
+                     CSV_FILE_PATH TEXT,
+                     DB_FILE_NAME TEXT,
+                     DB_FILE_PATH TEXT,
+                     LAST_MODIFIED_TIME TIMESTAMP
+                     )''')
+
+        csv_db_list = c.execute("SELECT CSV_FILE_NAME, DB_FILE_NAME, DB_FILE_PATH, strftime('%Y-%m-%d %H:%M:%S', LAST_MODIFIED_TIME)  FROM CSV_DB").fetchall()
+        c.close()
+        conn.close()
+        return dict(csv_db_list = csv_db_list)
 
 @error(404)
 def error404(error):
