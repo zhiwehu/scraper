@@ -171,7 +171,7 @@ def company_chart(error_message=None, success_message=None):
 
         if company_name:
             items = c.execute(
-                "SELECT TSSH_PWR_REDUCED, strftime('%Y-%m-%d %H:%M:%S', TIME_TAKEN) FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC"
+                "SELECT TSSH_PWR_REDUCED, strftime('%Y-%m-%d %H:%M', TIME_TAKEN) FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC"
                 , (company_name,)).fetchall()
         c.close()
         conn.close()
@@ -207,7 +207,7 @@ def do_macro_level_chart(error_message=None, success_message=None):
         if not selected_company_list:
             selected_company_list = company_list
 
-        sql="SELECT AVG(TSSH_PWR_REDUCED), strftime('%Y-%m-%d %H:%M:%S', TIME_TAKEN) FROM COMPANY WHERE COMPANY_NAME IN ({company_list}) GROUP BY strftime('%Y-%m-%d %H:%M:%S', TIME_TAKEN)".format(
+        sql="SELECT AVG(TSSH_PWR_REDUCED), strftime('%Y-%m-%d %H:%M', TIME_TAKEN) FROM COMPANY WHERE COMPANY_NAME IN ({company_list}) GROUP BY strftime('%Y-%m-%d %H:%M', TIME_TAKEN)".format(
             company_list=','.join(['?']*len(selected_company_list)))
         avg_company_data = c.execute(sql, selected_company_list).fetchall()
 
