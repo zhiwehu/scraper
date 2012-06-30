@@ -60,13 +60,11 @@
                 $("#form").submit();
             });
 
-            $("a.company_url").click(function() {
-                company_name = $(this).attr("rel");
-                company_name = company_name.replace("&", "%26");
-                url = "/?csv_file_name=" + "{{ csv_file_name }}" +"&company_name=" + company_name;
-                window.location.href=url;
-                return false
-            });
+            var company_name = $("a.company_url").attr("rel");
+            company_name = company_name.replace("&", "%26");
+            var url = "/?csv_file_name=" + "{{ csv_file_name }}" +"&company_name=" + company_name;
+            $("a.company_url").attr("href", url);
+
 
             var option = {
                 chart:{
@@ -75,6 +73,9 @@
                 },
                 title:{
                     text:'TSSH_PWR_REDUCED chart of {{ company_name }}'
+                },
+                subtitle: {
+                    text: '<a href="'+url+'">Source</a>'
                 },
                 xAxis:{
                     categories:[],
