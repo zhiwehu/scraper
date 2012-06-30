@@ -29,7 +29,7 @@
                     <td>{{ item[4] }}</td>
                     <td>
                         <a class="btn btn-small btn-primary" href="/csv/download/{{ item[0] }}"><i class="icon-download icon-white"></i> download</a>
-                        <a id="delete_csv" class="btn btn-small btn-danger" href="/csv/delete/{{ item[0] }}"><i class="icon-remove icon-white"></i> delete</a>
+                        <a class="btn btn-small btn-danger delete_csv" href="/csv/delete/{{ item[0] }}"><i class="icon-remove icon-white"></i> delete</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -46,7 +46,7 @@
 {% block ext_script %}
     <script type="text/javascript">
         $(function () {
-            $("#delete_csv").click(function() {
+            $("a.delete_csv").click(function() {
                 if (confirm("Are you sure?")) {
                     window.location.href = $(this).attr("href");
                 }
