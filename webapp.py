@@ -168,7 +168,7 @@ def company_chart(error_message=None, success_message=None):
         for company in companies:
             company_list.append(company[0])
 
-        if (company_name == None or company_name == 'ALL') and len(company_list)>0:
+        if (company_name == None or company_name == '') and len(company_list)>0:
             company_name = company_list[0]
 
         if company_name:
