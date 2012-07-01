@@ -10,7 +10,7 @@
             {% endif %}
         </select>
         <select id="company_name" name="company_name">
-            <option value="ALL">All Company</option>
+            <option value=""></option>
             {% if companies %}
                 {% for company in companies %}
                     <option  {% if company_name == company %} selected="selected" {% endif %}

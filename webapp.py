@@ -37,11 +37,19 @@ def index(error_message=None, success_message=None):
         for company in companies:
             company_list.append(company[0])
 
+        if (company_name == None or company_name == '') and len(company_list)>0:
+            company_name = company_list[0]
+
+        if company_name:
+            items = c.execute('SELECT * FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC',
+                (company_name, )).fetchall()
+        '''
         if company_name and company_name != 'ALL':
             items = c.execute('SELECT * FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC',
                 (company_name, )).fetchall()
         else:
             items = c.execute('SELECT * FROM COMPANY ORDER BY TIME_TAKEN ASC').fetchall()
+        '''
         c.close()
         conn.close()
     return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
