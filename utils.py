@@ -60,7 +60,7 @@ def get_db_path(csv_name):
     c.close()
     conn.close()
 
-    print csv
+    #print csv
 
     if csv:
         return csv[0]
