@@ -185,6 +185,8 @@ class Scraper(object):
             else:
                 tw_data = data
 
+            print tw_data
+
             yt_data = scraper.yt_scrape(company.yt_url)
             company_sm_data.fb_likes = fb_data['likes']
             company_sm_data.fb_talking_about_count = fb_data['talking_about_count']
