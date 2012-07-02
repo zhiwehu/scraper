@@ -3,9 +3,12 @@ __author__ = 'jeffrey'
 import urllib2
 import simplejson
 from twitter import User
+from logUtil import log
 
 def UsersLookup(twitter_ids):
     url = 'https://api.twitter.com/1/users/lookup.json?screen_name=%s' % twitter_ids
+    log.debug(url)
+    print url
     f = urllib2.urlopen(url)
     json = f.read()
     f.close()
