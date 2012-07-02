@@ -57,12 +57,11 @@ def get_twitter_id(url):
     """
     twitter_url = urlparse(url)
     if twitter_url.fragment:
-        result = twitter_url.fragment.replace('!', '').replace('/', '')
+        result = twitter_url.fragment.replace('!', '').replace('/', '').replace('@', '')
     elif twitter_url.path:
-        result = twitter_url.path.replace('/', '')
+        result = twitter_url.path.replace('/', '').replace('@', '')
     else:
         result = ''
-    result = result.replace('@', '', count=1)
     return result
 
 def get_youtube_id(url):
