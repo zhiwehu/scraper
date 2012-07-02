@@ -56,6 +56,6 @@ def build_dict(twitter_user_list):
         data['followers_count'] = twitter_user.followers_count
         data['tweets'] = twitter_user.statuses_count
 
-        result[twitter_user.screen_name] = data
+        result[twitter_user.screen_name.lower()] = data
 
     return result

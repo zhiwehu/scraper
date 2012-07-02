@@ -181,7 +181,7 @@ class Scraper(object):
             if scraper.check_url(company.tw_url, 'twitter.com'):
                 tw_id = scraper.get_twitter_id(company.tw_url)
                 data['twitter_id'] = tw_id
-                tw_data = twitter_user_dict.get(tw_id, data)
+                tw_data = twitter_user_dict.get(tw_id.lower(), data)
             else:
                 tw_data = data
 
