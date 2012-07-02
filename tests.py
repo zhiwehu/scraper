@@ -94,6 +94,12 @@ class ScraperTest(unittest.TestCase):
         self.assertTrue(data['followers_count'] > 0)
         self.assertTrue(data['tweets'] > 0)
 
+        # Test anohter format url
+        url='https://twitter.com/@YardHouse'
+        data = scraper.tw_scrape(url)
+        self.assertTrue(data['followers_count'] > 0)
+        self.assertTrue(data['tweets'] > 0)
+
     def testYoutube(self):
         # Test None url
         url=None
