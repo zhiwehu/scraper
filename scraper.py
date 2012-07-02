@@ -62,7 +62,7 @@ def get_twitter_id(url):
         result = twitter_url.path.replace('/', '').replace('@', '')
     else:
         result = ''
-    return result
+    return result.lower()
 
 def get_youtube_id(url):
     """
