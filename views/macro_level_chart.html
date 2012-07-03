@@ -101,11 +101,13 @@
                     text:'Average TSSH_PWR_REDUCED chart'
                 },
                 xAxis:{
-                    categories:[],
-                    labels:{
-                        formatter:function () {
-                            return this.value;
-                        }
+                    type: 'datetime',
+                    dateTimeLabelFormats: {
+                        minute: '%H:%M',
+                        hour: '%H:%M',
+                        day: '%e. %b',
+                        month: '%b \'%y',
+                        year: '%Y'
                     }
                 },
                 yAxis:{
@@ -118,9 +120,10 @@
                         }
                     }
                 },
-                tooltip:{
-                    formatter:function () {
-                        return this.y;
+                tooltip: {
+                    formatter: function() {
+                        return '<b>'+ Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x) +'</b><br/>'+
+                                this.y;
                     }
                 },
                 plotOptions:{
@@ -146,13 +149,16 @@
                 ]
             };
             $('.time_taken').each(function () {
-                option.xAxis.categories.push(this.innerHTML)
+                //option.xAxis.categories.push(this.innerHTML);
+                var d = Date.parse(this.innerHTML.replace(/-/g, " "));
+                option.series[0].data.push([d]);
             });
 
-            $('.tssh_data').each(function () {
-                option.series[0].data.push(parseFloat(this.innerHTML));
+            $('.tssh_data').each(function (i) {
+                //option.series[0].data.push(parseFloat(this.innerHTML));
+                option.series[0].data[i].push(parseFloat(this.innerHTML));
             });
-            option.plotOptions.pointStart = option.xAxis.categories[0];
+            //option.plotOptions.pointStart = option.xAxis.categories[0];
             var chart = new Highcharts.Chart(option);
         })
     </script>
