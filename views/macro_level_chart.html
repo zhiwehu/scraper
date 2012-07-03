@@ -150,8 +150,8 @@
             };
             $('.time_taken').each(function () {
                 //option.xAxis.categories.push(this.innerHTML);
-                var d = Date.parse(this.innerHTML.replace(/-/g, " "));
-                option.series[0].data.push([d]);
+                var d = new Date(this.innerHTML.replace(" ", "T") + ":00Z");
+                option.series[0].data.push([d.getTime()]);
             });
 
             $('.tssh_data').each(function (i) {
