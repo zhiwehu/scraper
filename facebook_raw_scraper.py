@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 def scrap_facebook_raw_data(url):
     data = {'likes': 0, 'talking_about_count': 0, 'checkins': 0}
     number_pat = "[0-9]+"
-    stat_pat ='<div class="fsm fwn fcg">([0-9]+)(.*)([0-9]+)(.*)([0-9]+)(.*)</div>'
+    stat_pat ='<div class="fsm fwn fcg">([0-9]+)(.*)([0-9]+)(.*)([0-9]+)(.*)\w+</div>'
     with closing(urllib2.urlopen(url)) as page:
         content = page.read()
         content= re.sub(',', '', content)
@@ -16,7 +16,14 @@ def scrap_facebook_raw_data(url):
             #print result.group()
             result = re.findall(number_pat, result.group())
             if len(result)>=3:
-                return tuple(result[:3])
+                data['likes']=result[0]
+                data['talking_about_count']=result[1]
+                data['checkins']=result[2]
+                return data
+            elif len(result)>=2:
+                data['likes']=result[0]
+                data['talking_about_count']=result[1]
+                return data
 
 def get_stat_numbers(str):
     str= re.sub(',', '', str)
