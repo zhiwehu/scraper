@@ -175,6 +175,9 @@ class Scraper(object):
         for company in company_list:
             company_sm_data = CompanySocialMedia(company.company_name)
             fb_data = scraper.scrap_facebook_raw_data(company.fb_url)
+            # If can not get fb data from html, just try to get it from graph api
+            if fb_data['likes'] == 0 and fb_data['talking_about_count'] == 0 and fb_data['checkins'] == 0:
+                fb_data = scraper.fb_scrape(company.fb_url)
             #tw_data = scraper.tw_scrape(company.tw_url)
 
             data = {'twitter_id': '', 'followers_count': 0, 'tweets': 0}
