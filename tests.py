@@ -150,6 +150,15 @@ class ScraperTest(unittest.TestCase):
         c = list[0]
         self.assertTrue('Wal-Mart Stores', c.company_name)
 
+        # Test good format csv
+        file = open('data/NRN_RestaurantList.csv', 'rb')
+        company_list = s.read_csv(file)
+        self.assertTrue(len(company_list) > 0)
+        list = s.get_social_media(company_list[0:1])
+        self.assertEqual(1, len(list))
+        c = list[0]
+        #self.assertTrue('Wal-Mart Stores', c.company_name)
+
         # Test error format csv
         try:
             file = open('testdata/error_format.csv', 'rb')

@@ -175,16 +175,14 @@ def scrap_facebook_raw_data(url):
                     #print result.group()
                     result = re.findall(number_pat, result.group())
                     if len(result)>=3:
-                        data['likes']=result[0]
-                        data['talking_about_count']=result[1]
-                        data['checkins']=result[2]
+                        data['likes']=int(result[0])
+                        data['talking_about_count']=int(result[1])
+                        data['checkins']=int(result[2])
                         return data
                     elif len(result)>=2:
-                        data['likes']=result[0]
-                        data['talking_about_count']=result[1]
+                        data['likes']=int(result[0])
+                        data['talking_about_count']=int(result[1])
         except Exception as e:
             log.error(e)
             pass
     return data
-
-print scrap_facebook_raw_data("http://www.facebook.com/applebees")
