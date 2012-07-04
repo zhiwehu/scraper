@@ -166,21 +166,25 @@ def scrap_facebook_raw_data(url):
     if check_url(url, 'www.facebook.com'):
         number_pat = "[0-9]+"
         stat_pat ='<div class="fsm fwn fcg"><div class="fsm fwn fcg">([0-9]+)(.*)([0-9]+)(.*)([0-9]+)(.*)\w+</div></div>'
-        with closing(urllib2.urlopen(url)) as page:
-            content = page.read()
-            content= re.sub(',', '', content)
-            result = re.search(stat_pat, content)
-            if result:
-                #print result.group()
-                result = re.findall(number_pat, result.group())
-                if len(result)>=3:
-                    data['likes']=result[0]
-                    data['talking_about_count']=result[1]
-                    data['checkins']=result[2]
-                    return data
-                elif len(result)>=2:
-                    data['likes']=result[0]
-                    data['talking_about_count']=result[1]
+        try:
+            with closing(urllib2.urlopen(url)) as page:
+                content = page.read()
+                content= re.sub(',', '', content)
+                result = re.search(stat_pat, content)
+                if result:
+                    #print result.group()
+                    result = re.findall(number_pat, result.group())
+                    if len(result)>=3:
+                        data['likes']=result[0]
+                        data['talking_about_count']=result[1]
+                        data['checkins']=result[2]
+                        return data
+                    elif len(result)>=2:
+                        data['likes']=result[0]
+                        data['talking_about_count']=result[1]
+        except Exception as e:
+            log.error(e)
+            pass
     return data
 
 print scrap_facebook_raw_data("http://www.facebook.com/applebees")
