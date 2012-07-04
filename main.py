@@ -9,6 +9,7 @@ from datetime import datetime
 
 import scraper
 import calculator
+import simple_twitter_api
 from progress_bar import ProgressBar
 
 class CompanyURL(object):
@@ -36,13 +37,13 @@ class CompanyURL(object):
 class CompanySocialMedia(object):
     def __init__(self,
                  company_name,
-                 fb_likes=None,
-                 fb_talking_about_count=None,
-                 fb_checkins=None,
-                 tw_followers_count=None,
-                 tw_tweets=None,
-                 yt_subscriber_count=None,
-                 yt_view_count=None,
+                 fb_likes=0,
+                 fb_talking_about_count=0,
+                 fb_checkins=0,
+                 tw_followers_count=0,
+                 tw_tweets=0,
+                 yt_subscriber_count=0,
+                 yt_view_count=0,
                  fb_metrics=None,
                  tw_metrics=None,
                  yt_metrics=None,
@@ -104,7 +105,7 @@ class Scraper(object):
         if not file:
             raise Exception('The file is none.')
 
-        print file
+        #print file
         company_list = []
         reader = csv.reader(file)
 
@@ -122,7 +123,7 @@ class Scraper(object):
 
         if close:
             file.close()
-        print company_list
+        #print company_list
         return company_list
 
     def get_social_media(self, company_list):
@@ -142,12 +143,50 @@ class Scraper(object):
         oldprog = str(prog)
         i = 0
 
+        # Call twitter api in batch mode
+        company_dict = {}
+        for company in company_list:
+            company_sm_data = CompanySocialMedia(company.company_name)
+            if scraper.check_url(company.tw_url, 'twitter.com'):
+                twitter_id = scraper.get_twitter_id(company.tw_url)
+                if twitter_id:
+                    company_dict[twitter_id] = company_sm_data
+
+        count = 0
+        twitter_ids = ''
+        twitter_user_list = []
+        for k, v in company_dict.iteritems():
+            twitter_ids = twitter_ids + ',' + k
+            count += 1
+            if count == 100:
+                # Remove the first ','
+                twitter_ids = twitter_ids[1:]
+                # call api
+                twitter_user_list.extend(simple_twitter_api.UsersLookup(twitter_ids))
+
+                twitter_ids = ''
+                count = 0
+        twitter_user_list.extend(simple_twitter_api.UsersLookup(twitter_ids))
+
+        twitter_user_dict = simple_twitter_api.build_dict(twitter_user_list)
+
         result = []
         current_datetime = datetime.now()
         for company in company_list:
             company_sm_data = CompanySocialMedia(company.company_name)
             fb_data = scraper.fb_scrape(company.fb_url)
-            tw_data = scraper.tw_scrape(company.tw_url)
+            #tw_data = scraper.tw_scrape(company.tw_url)
+
+            data = {'twitter_id': '', 'followers_count': 0, 'tweets': 0}
+            if scraper.check_url(company.tw_url, 'twitter.com'):
+                tw_id = scraper.get_twitter_id(company.tw_url)
+                data['twitter_id'] = tw_id
+                tw_data = twitter_user_dict.get(tw_id.lower(), data)
+            else:
+                tw_data = data
+
+            print tw_data
+
             yt_data = scraper.yt_scrape(company.yt_url)
             company_sm_data.fb_likes = fb_data['likes']
             company_sm_data.fb_talking_about_count = fb_data['talking_about_count']
@@ -157,7 +196,7 @@ class Scraper(object):
             company_sm_data.yt_subscriber_count = yt_data['subscriber_count']
             company_sm_data.yt_view_count = yt_data['view_count']
 
-            log.debug('%d, %d, %d' % (company_sm_data.fb_likes, company_sm_data.fb_talking_about_count, company_sm_data.fb_checkins))
+            #log.debug('%d, %d, %d' % (company_sm_data.fb_likes, company_sm_data.fb_talking_about_count, company_sm_data.fb_checkins))
             fb_metrics = calculator.cal_fb_hm(company_sm_data.fb_likes, company_sm_data.fb_talking_about_count, company_sm_data.fb_checkins)
             tw_metrics = calculator.cal_tw_hm(tw_data['twitter_id'], company_sm_data.tw_followers_count, company_sm_data.tw_tweets)
             yt_metrics = calculator.cal_yt_hm(company_sm_data.yt_subscriber_count, company_sm_data.yt_view_count)

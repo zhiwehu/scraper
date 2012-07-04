@@ -10,6 +10,7 @@
             {% endif %}
         </select>
         <select id="company_name" name="company_name">
+            <option value=""></option>
             {% if companies %}
                 {% for company in companies %}
                     <option  {% if company_name == company %} selected="selected" {% endif %}
@@ -18,6 +19,10 @@
             {% endif %}
         </select>
     </form>
+    <h2>Company name: <a class="company_url" rel="{{ company_name }}" href="/?csv_file_name={{ csv_file_name }}&company_name={{ company_name }}">{{ company_name }}</a>
+        <a class="btn btn-info" href="#company_chart"><i class="icon-picture icon-white"></i> View chart</a>
+    </h2>
+
     <table class="table table-striped table-bordered">
         <thead>
         <tr>
@@ -54,23 +59,33 @@
                 $("#company_name").val("");
                 $("#form").submit();
             });
+
+            var company_name = $("a.company_url").attr("rel");
+            company_name = company_name.replace("&", "%26");
+            var url = "/?csv_file_name=" + "{{ csv_file_name }}" +"&company_name=" + company_name;
+            $("a.company_url").attr("href", url);
+
+
             var option = {
                 chart:{
                     renderTo:'company_chart',
-                    type:'line'
+                    type: 'line',
+                    zoomType: 'x'
                 },
                 title:{
-                    text:'TSSH_PWR_REDUCED chart of {{ company_name }}'
+                    text:"TSSH_PWR_REDUCED chart of {{ company_name }}"
                 },
-                subtitle:{
-                    text:'<a href="/?csv_file_name={{ csv_file_name }}&company_name={{ company_name }}">Source data</a>'
+                subtitle: {
+                    text: '<a href="'+url+'">Source</a>'
                 },
                 xAxis:{
-                    categories:[],
-                    labels:{
-                        formatter:function () {
-                            return this.value;
-                        }
+                    type: 'datetime',
+                    dateTimeLabelFormats: {
+                        minute: '%H:%M',
+                        hour: '%H:%M',
+                        day: '%e. %b',
+                        month: '%b \'%y',
+                        year: '%Y'
                     }
                 },
                 yAxis:{
@@ -83,9 +98,10 @@
                         }
                     }
                 },
-                tooltip:{
-                    formatter:function () {
-                        return this.y;
+                tooltip: {
+                    formatter: function() {
+                        return '<b>'+ Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x) +'</b><br/>'+
+                                this.y;
                     }
                 },
                 plotOptions:{
@@ -105,19 +121,23 @@
                 },
                 series:[
                     {
-                        name:'{{ company_name }}',
+                        name:"{{ company_name }}",
                         data:[]
                     }
                 ]
             };
             $('.time_taken').each(function () {
-                option.xAxis.categories.push(this.innerHTML)
+                //option.series[0].data.push([Date.UTC(this.innerHTML)]);
+                //option.xAxis.categories.push(this.innerHTML);
+                var d = new Date(this.innerHTML.replace(" ", "T") + ":00Z");
+                option.series[0].data.push([d.getTime()]);
             });
 
-            $('.tssh_data').each(function () {
-                option.series[0].data.push(parseFloat(this.innerHTML));
+            $('.tssh_data').each(function (i) {
+                //option.series[0].data.push(parseFloat(this.innerHTML));
+                option.series[0].data[i].push(parseFloat(this.innerHTML));
+                //alert(option.series[0].data[i]);
             });
-            option.plotOptions.pointStart = option.xAxis.categories[0];
             var chart = new Highcharts.Chart(option);
         })
     </script>

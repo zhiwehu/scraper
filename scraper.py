@@ -57,9 +57,9 @@ def get_twitter_id(url):
     """
     twitter_url = urlparse(url)
     if twitter_url.fragment:
-        result = twitter_url.fragment.replace('!', '').replace('/', '')
+        result = twitter_url.fragment.replace('!', '').replace('/', '').replace('@', '')
     elif twitter_url.path:
-        result = twitter_url.path.replace('/', '')
+        result = twitter_url.path.replace('/', '').replace('@', '')
     else:
         result = ''
     return result
@@ -97,8 +97,14 @@ def fb_scrape(url):
             log.error(e)
             pass
     if facebook_data:
-        data['likes'] = facebook_data.get('likes')
-        data['talking_about_count'] = facebook_data.get('talking_about_count')
+        if facebook_data.get('likes'):
+            data['likes'] = facebook_data.get('likes')
+        else:
+            data['likes'] = 0
+        if facebook_data.get('talking_about_count'):
+            data['talking_about_count'] = facebook_data.get('talking_about_count')
+        else:
+            data['talking_about_count'] = 0
         if facebook_data.get('were_here_count'):
             data['checkins'] = facebook_data.get('were_here_count')
         else:

@@ -26,7 +26,7 @@
                         {% for company in companies %}
                             <tr>
                                 <td><input name="company" value="{{ company }}" type="checkbox" {% if company in selected_company_list %} checked="checked"{% endif %}></td>
-                                <td><a href="/?csv_file_name={{ csv_file_name }}&company_name={{ company }}">{{ company }}</a></td>
+                                <td><a class="company_url" rel="{{ company }}" href="/?csv_file_name={{ csv_file_name }}&company_name={{ company }}">{{ company }}</a></td>
                             </tr>
                         {% endfor %}
                     {% endif %}
@@ -84,20 +84,31 @@
                 }
             });
 
+            $("a.company_url").click(function() {
+                company_name = $(this).attr("rel");
+                company_name = company_name.replace("&", "%26");
+                url = "/?csv_file_name=" + "{{ csv_file_name }}" +"&company_name=" + company_name;
+                window.location.href=url;
+                return false
+            });
+
             var option = {
                 chart:{
                     renderTo:'company_chart',
-                    type:'line'
+                    type:'line',
+                    zoomType: 'x'
                 },
                 title:{
                     text:'Average TSSH_PWR_REDUCED chart'
                 },
                 xAxis:{
-                    categories:[],
-                    labels:{
-                        formatter:function () {
-                            return this.value;
-                        }
+                    type: 'datetime',
+                    dateTimeLabelFormats: {
+                        minute: '%H:%M',
+                        hour: '%H:%M',
+                        day: '%e. %b',
+                        month: '%b \'%y',
+                        year: '%Y'
                     }
                 },
                 yAxis:{
@@ -110,9 +121,10 @@
                         }
                     }
                 },
-                tooltip:{
-                    formatter:function () {
-                        return this.y;
+                tooltip: {
+                    formatter: function() {
+                        return '<b>'+ Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x) +'</b><br/>'+
+                                this.y;
                     }
                 },
                 plotOptions:{
@@ -138,13 +150,16 @@
                 ]
             };
             $('.time_taken').each(function () {
-                option.xAxis.categories.push(this.innerHTML)
+                //option.xAxis.categories.push(this.innerHTML);
+                var d = new Date(this.innerHTML.replace(" ", "T") + ":00Z");
+                option.series[0].data.push([d.getTime()]);
             });
 
-            $('.tssh_data').each(function () {
-                option.series[0].data.push(parseFloat(this.innerHTML));
+            $('.tssh_data').each(function (i) {
+                //option.series[0].data.push(parseFloat(this.innerHTML));
+                option.series[0].data[i].push(parseFloat(this.innerHTML));
             });
-            option.plotOptions.pointStart = option.xAxis.categories[0];
+            //option.plotOptions.pointStart = option.xAxis.categories[0];
             var chart = new Highcharts.Chart(option);
         })
     </script>
