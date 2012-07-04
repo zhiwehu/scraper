@@ -30,7 +30,7 @@ def cal_fb_hm(fb_likes, fb_talking_about_count, fb_checkins):
         fb_metrics['fb_tchk_sqrt'] = fb_tchk_sqrt
         fb_metrics['fb_health'] = fb_health
     except Exception as e:
-        log.eror(e)
+        log.error(e)
         pass
     return fb_metrics
 
