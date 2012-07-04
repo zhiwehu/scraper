@@ -21,7 +21,7 @@ def cal_fb_hm(fb_likes, fb_talking_about_count, fb_checkins):
         fb_chl = float(fb_checkins) / float(fb_likes) * 100
         fb_combined = fb_tl + fb_chl
         fb_likes_sqrt = float(fb_likes) ** 0.9
-        fb_tchk_sqrt = float(fb_talking_about_count + fb_checkins) ** 0.2
+        fb_tchk_sqrt = (float(fb_talking_about_count) + float(fb_checkins)) ** 0.2
         fb_health = (((fb_combined ** 0.5) * fb_likes_sqrt * fb_tchk_sqrt) / 30000000) ** 0.65
         fb_metrics['fb_tl'] = fb_tl
         fb_metrics['fb_chl'] = fb_chl

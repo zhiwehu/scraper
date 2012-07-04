@@ -2,7 +2,6 @@
 from contextlib import closing
 import urllib2
 import re
-from bs4 import BeautifulSoup
 
 def scrap_facebook_raw_data(url):
     data = {'likes': 0, 'talking_about_count': 0, 'checkins': 0}

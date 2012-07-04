@@ -6,8 +6,10 @@ import sqlite3
 from logUtil import log
 from urlparse import urlparse
 from datetime import datetime
+import urllib2
 
 import scraper
+from pyloginfb import FacebookLogin, fb_username, fb_password
 import calculator
 import simple_twitter_api
 from progress_bar import ProgressBar
@@ -90,6 +92,11 @@ class CompanySocialMedia(object):
 
 class Scraper(object):
     def __init__(self):
+        try:
+            self.fblogin = FacebookLogin(fb_username, fb_password)
+            urllib2.install_opener(self.fblogin.opener)
+        except Exception as e:
+            log.error(e)
         pass
 
     def read_csv(self, file, close=False):
