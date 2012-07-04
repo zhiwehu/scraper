@@ -174,7 +174,7 @@ class Scraper(object):
         current_datetime = datetime.now()
         for company in company_list:
             company_sm_data = CompanySocialMedia(company.company_name)
-            fb_data = scraper.fb_scrape(company.fb_url)
+            fb_data = scraper.scrap_facebook_raw_data(company.fb_url)
             #tw_data = scraper.tw_scrape(company.tw_url)
 
             data = {'twitter_id': '', 'followers_count': 0, 'tweets': 0}

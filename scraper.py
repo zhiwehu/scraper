@@ -2,7 +2,8 @@ __author__ = 'jeffrey'
 
 from urlparse import urlparse
 import re
-
+from contextlib import closing
+import urllib2
 from logUtil import log
 
 import twitter
@@ -159,3 +160,27 @@ def yt_scrape(url):
         data['view_count'] = int(youtube_data.statistics.view_count)
         data['subscriber_count'] = int(youtube_data.statistics.subscriber_count)
     return data
+
+def scrap_facebook_raw_data(url):
+    data = {'likes': 0, 'talking_about_count': 0, 'checkins': 0}
+    if check_url(url, 'www.facebook.com'):
+        number_pat = "[0-9]+"
+        stat_pat ='<div class="fsm fwn fcg"><div class="fsm fwn fcg">([0-9]+)(.*)([0-9]+)(.*)([0-9]+)(.*)\w+</div></div>'
+        with closing(urllib2.urlopen(url)) as page:
+            content = page.read()
+            content= re.sub(',', '', content)
+            result = re.search(stat_pat, content)
+            if result:
+                #print result.group()
+                result = re.findall(number_pat, result.group())
+                if len(result)>=3:
+                    data['likes']=result[0]
+                    data['talking_about_count']=result[1]
+                    data['checkins']=result[2]
+                    return data
+                elif len(result)>=2:
+                    data['likes']=result[0]
+                    data['talking_about_count']=result[1]
+    return data
+
+print scrap_facebook_raw_data("http://www.facebook.com/applebees")
