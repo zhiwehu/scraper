@@ -1,5 +1,7 @@
+
+
 __author__ = 'jeffrey'
-from logUtil import log
+from pyloginfb import fblogin
 
 import unittest
 import scraper
@@ -132,6 +134,7 @@ class ScraperTest(unittest.TestCase):
         self.assertTrue(data['subscriber_count'] > 0)
 
     def testMain(self):
+        fblogin()
         s = main.Scraper()
 
         # Test None file

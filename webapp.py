@@ -2,8 +2,8 @@ __author__ = 'jeffrey'
 
 import sqlite3
 import os
-from bottle import route, run, debug, static_file, jinja2_view as view, request, response, error, HTTPError, redirect
-import os.path
+from bottle import route, run, debug, static_file, jinja2_view as view, request, response, error, HTTPError
+from pyloginfb import fblogin
 from datetime import datetime
 
 import uuid
@@ -112,6 +112,7 @@ def csv_delete(csv_file_name):
 @view('upload')
 def do_upload():
     csvfile = request.files.get('csvfile', None)
+    fblogin()
     s = Scraper()
     try:
         if csvfile.file == None:
@@ -322,6 +323,9 @@ def re_scrape_schedule():
     csv_db_file_list = c.execute('SELECT CSV_FILE_PATH, DB_FILE_PATH FROM CSV_DB').fetchall()
     c.close()
     conn.close()
+
+    fblogin()
+
     for item in csv_db_file_list:
         csv_path = item[0]
         db_path  = item[1]

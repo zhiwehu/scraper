@@ -3,9 +3,6 @@ import os
 import urllib
 import urllib2
 
-# set these to whatever your fb account is
-from scraper import scrap_facebook_raw_data
-
 fb_username = "alex@alexanderpaley.com"
 fb_password = "trackingsocial"
 
@@ -48,3 +45,11 @@ class FacebookLogin(object):
             })
         response = self.opener.open("https://login.facebook.com/login.php", login_data)
         return ''.join(response.readlines())
+
+def fblogin():
+    try:
+        fblogin = FacebookLogin(fb_username, fb_password)
+        urllib2.install_opener(fblogin.opener)
+    except Exception as e:
+        log.error(e)
+    pass

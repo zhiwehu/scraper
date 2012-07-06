@@ -5,6 +5,7 @@ from main import Scraper
 from logUtil import log
 import sqlite3
 from utils import ScrapeThread
+from pyloginfb import fblogin
 
 sched = Scheduler()
 sched.start()
@@ -20,6 +21,9 @@ def doJob():
     c.close()
     conn.close()
     threads = []
+
+    fblogin()
+
     for item in csv_db_file_list:
         csv_path = item[0]
         db_path  = item[1]
