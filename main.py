@@ -13,6 +13,7 @@ from pyloginfb import FacebookLogin, fb_username, fb_password
 import calculator
 import simple_twitter_api
 from progress_bar import ProgressBar
+from utils import handleFBData
 
 class CompanyURL(object):
     def __init__(self, company_name, fb_url, tw_url, yt_url):
@@ -185,6 +186,8 @@ class Scraper(object):
             # If can not get fb data from html, just try to get it from graph api
             if fb_data['likes'] == 0 and fb_data['talking_about_count'] == 0 and fb_data['checkins'] == 0:
                 fb_data = scraper.fb_scrape(company.fb_url)
+            fb_data = handleFBData(fb_data)
+
             #tw_data = scraper.tw_scrape(company.tw_url)
 
             data = {'twitter_id': '', 'followers_count': 0, 'tweets': 0}
@@ -194,8 +197,6 @@ class Scraper(object):
                 tw_data = twitter_user_dict.get(tw_id.lower(), data)
             else:
                 tw_data = data
-
-            print tw_data
 
             yt_data = scraper.yt_scrape(company.yt_url)
             company_sm_data.fb_likes = fb_data['likes']

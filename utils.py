@@ -6,6 +6,7 @@ from datetime import datetime
 import csv
 import cStringIO
 import codecs
+import math
 from logUtil import log
 
 def get_setting():
@@ -185,3 +186,12 @@ class UnicodeWriter:
     def writerows(self, rows):
         for row in rows:
             self.writerow(row)
+
+def handleFBData(fb_data):
+    """
+        If the FB check-in value is less than 50, set it to (FB Likes * 0.0123)
+    """
+    if fb_data['checkins'] <= 50:
+        fb_data['checkins'] = int(math.ceil(float(fb_data['likes']) * 0.0123))
+    return fb_data
+

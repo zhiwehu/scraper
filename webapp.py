@@ -90,16 +90,23 @@ def csv_download(csv_file_name):
 def csv_delete(csv_file_name):
     try:
         os.remove(os.path.join(WEB_ROOT, 'data/%s.csv' % csv_file_name))
+    except Exception as e:
+        log.error(e)
+        pass
+
+    try:
         conn = sqlite3.connect('data/setting.db')
         c = conn.cursor()
         c.execute("DELETE FROM CSV_DB WHERE CSV_FILE_NAME = ?", (csv_file_name, )).fetchall()
         conn.commit()
         c.close()
         conn.close()
-        return csv_upload(success_message='CSV file %s has been deleted success.' % csv_file_name)
     except Exception as e:
         log.error(e)
-        return HTTPError(code=404)
+        #return HTTPError(code=404)
+        pass
+
+    return csv_upload(success_message='CSV file %s has been deleted success.' % csv_file_name)
 
 @route('/csv/upload', method='POST')
 @view('upload')

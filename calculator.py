@@ -44,6 +44,26 @@ def cal_tw_hm(twitter_id, tw_followers_count, tw_tweets):
     tw_metrics['tw_followers_count'] = tw_followers_count
     tw_metrics['tw_tweets'] = tw_tweets
     tw_metrics['tw_health'] = tw_health
+
+    #If (Klout True Reach / TW Followers) is less than 0.1,
+    # set it to (TW followers * 0.10); this makes Klout True Reach equivalent to 10% of the follower base
+    if float(tw_metrics['tw_followers_count']) > 0 and (float(tw_metrics['klout_truereach'])/float(tw_metrics['tw_followers_count'])) < 0.1:
+        tw_metrics['klout_truereach'] = float(tw_metrics['tw_followers_count']) * 0.1
+
+    # If the Retweeted value is less than 10, set it to 10
+    if float(tw_metrics['retweeted']) < 50:
+        tw_metrics['retweeted'] = 50
+
+    # If the Impact score is less than 0.1 set it to 0.1;
+    if float(tw_metrics['impact']) < 0.1:
+        tw_metrics['impact'] = 0.1
+
+    # Also, individually do the same for Engagement and Influence; so that essentially whatever value is zero, will become 0.1
+    if float(tw_metrics['engagement']) == 0:
+        tw_metrics['engagement'] = 0.1
+    if float(tw_metrics['influence']) == 0:
+        tw_metrics['influence'] = 0.1
+
     return tw_metrics
 
 def cal_yt_hm(yt_subscriber_count, yt_view_count):
