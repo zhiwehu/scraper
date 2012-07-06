@@ -3,6 +3,8 @@ import os
 import urllib
 import urllib2
 
+from logUtil import log
+
 fb_username = "alex@alexanderpaley.com"
 fb_password = "trackingsocial"
 
