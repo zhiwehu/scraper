@@ -154,6 +154,7 @@ def yt_scrape(url):
         try:
             youtube_data = youtube_api.GetYouTubeUserEntry(username=youtube_id)
         except Exception as e:
+            log.error('Youtube %s scrape error' % url)
             log.error(e)
             pass
     if youtube_data:
@@ -183,6 +184,7 @@ def scrap_facebook_raw_data(url):
                         data['likes']=int(result[0])
                         data['talking_about_count']=int(result[1])
         except Exception as e:
+            log.error('Facebook url %s scrape error!' % url)
             log.error(e)
             pass
     return data

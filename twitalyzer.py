@@ -10,7 +10,7 @@ def get_tw_data(twitter_id):
     url = 'http://www.twitalyzer.com/api/2/user.asp?k=%s&u=%s&f=JSON' % (api_key, twitter_id)
     try:
         tw_api_data = urllib2.urlopen(url).read()
-        log.debug(tw_api_data)
+        #log.debug('TWITTER NAME: %s:%s' %(twitter_id, tw_api_data))
         tw_api_data = tw_api_data.replace('[{', '').replace('}]', '')
         tw_api_data_list = tw_api_data.split(',')
         for item in tw_api_data_list:
@@ -18,6 +18,8 @@ def get_tw_data(twitter_id):
             value = item.split(':')[1]
             if data.has_key(key):
                 data[key] = value
+            if key == 'error':
+                log.error('TWITTER NAME: %s:%s' %(twitter_id, tw_api_data))
     except Exception as e:
         log.error('Get twitter data error for %s' % twitter_id)
         log.error(e)
