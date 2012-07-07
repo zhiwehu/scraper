@@ -168,7 +168,7 @@ def scrap_facebook_raw_data(url):
         number_pat = "[0-9]+"
         stat_pat ='<div class="fsm fwn fcg"><div class="fsm fwn fcg">([0-9]+)(.*)([0-9]+)(.*)([0-9]+)(.*)\w+</div></div>'
         try:
-            with closing(urllib2.urlopen(url)) as page:
+            with closing(urllib2.urlopen(url=url, timeout=30)) as page:
                 content = page.read()
                 content= re.sub(',', '', content)
                 result = re.search(stat_pat, content)
