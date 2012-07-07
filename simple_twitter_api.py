@@ -7,7 +7,7 @@ from logUtil import log
 
 def UsersLookup(twitter_ids):
     url = 'https://api.twitter.com/1/users/lookup.json?screen_name=%s' % twitter_ids
-    log.debug(url)
+    #log.debug(url)
     f = urllib2.urlopen(url)
     json = f.read()
     f.close()
