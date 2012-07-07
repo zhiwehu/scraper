@@ -240,6 +240,7 @@ class Scraper(object):
             @return: insert total count
         """
         conn = sqlite3.connect(db_filename)
+        conn.text_factory = str
         c = conn.cursor()
         # Create table
         c.execute('''CREATE TABLE IF NOT EXISTS COMPANY
