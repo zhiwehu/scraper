@@ -34,12 +34,17 @@ def cal_fb_hm(fb_likes, fb_talking_about_count, fb_checkins):
         pass
     return fb_metrics
 
+
 def cal_tw_hm(twitter_id, tw_followers_count, tw_tweets):
+    if not twitter_id:
+        return {'impact': 0, 'engagement': 0, 'influence': 0, 'retweeted': 0, 'klout_truereach': 0,
+                'tw_followers_count': tw_followers_count, 'tw_tweets': tw_tweets, 'tw_health': 0}
+
     tw_metrics = get_tw_data(twitter_id)
     #log.debug(tw_metrics)
     tw_health = (((float(tw_followers_count) ** 0.9) * ((float(tw_tweets) / 2) ** 0.2) * (
         float(tw_metrics['impact']) ** 0.3) * (float(tw_metrics['engagement']) ** 0.2) * (
-    float(tw_metrics['influence']) ** 0.3) * (
+        float(tw_metrics['influence']) ** 0.3) * (
         float(tw_metrics['retweeted']) ** 0.4) * (float(tw_metrics['klout_truereach']) ** 0.3)) ** 0.4) / 1000
     tw_metrics['tw_followers_count'] = tw_followers_count
     tw_metrics['tw_tweets'] = tw_tweets
@@ -47,7 +52,8 @@ def cal_tw_hm(twitter_id, tw_followers_count, tw_tweets):
 
     #If (Klout True Reach / TW Followers) is less than 0.1,
     # set it to (TW followers * 0.10); this makes Klout True Reach equivalent to 10% of the follower base
-    if float(tw_metrics['tw_followers_count']) > 0 and (float(tw_metrics['klout_truereach'])/float(tw_metrics['tw_followers_count'])) < 0.1:
+    if float(tw_metrics['tw_followers_count']) > 0 and (float(tw_metrics['klout_truereach']) / float(
+        tw_metrics['tw_followers_count'])) < 0.1:
         tw_metrics['klout_truereach'] = float(tw_metrics['tw_followers_count']) * 0.1
 
     # If the Retweeted value is less than 10, set it to 10
@@ -66,11 +72,13 @@ def cal_tw_hm(twitter_id, tw_followers_count, tw_tweets):
 
     return tw_metrics
 
+
 def cal_yt_hm(yt_subscriber_count, yt_view_count):
     yt_metrics = {'yt_subscriber_count': yt_subscriber_count,
                   'yt_view_count': yt_view_count,
                   'yt_health': (float(yt_subscriber_count) * 0.3 + float(yt_view_count) ** 0.6) / 2900}
     return yt_metrics
+
 
 def cal_macro_metrics(fb_health, tw_health, yt_health):
     macro_metrics = {'tssh_raw': 0, 'tssh_pwr_reduced': 0, 'fb_percent': 0, 'tw_percent': 0, 'yt_percent': 0,
