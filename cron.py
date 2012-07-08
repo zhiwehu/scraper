@@ -29,12 +29,13 @@ def doJob():
         db_path  = item[1]
         s = Scraper()
         thread = ScrapeThread(s,csv_path, db_path)
-        thread.start()
+        #thread.start()
+        thread.run() # run threads one by one
         threads.append(thread)
 
     # Wait for all threads to complete
-    for t in threads:
-        t.join()
+    #for t in threads:
+    #    t.join()
 
     log.info('all scraper threads finished in doJob()')
     return
