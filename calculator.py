@@ -42,13 +42,9 @@ def cal_tw_hm(twitter_id, tw_followers_count, tw_tweets):
 
     tw_metrics = get_tw_data(twitter_id)
     #log.debug(tw_metrics)
-    tw_health = (((float(tw_followers_count) ** 0.9) * ((float(tw_tweets) / 2) ** 0.2) * (
-        float(tw_metrics['impact']) ** 0.3) * (float(tw_metrics['engagement']) ** 0.2) * (
-        float(tw_metrics['influence']) ** 0.3) * (
-        float(tw_metrics['retweeted']) ** 0.4) * (float(tw_metrics['klout_truereach']) ** 0.3)) ** 0.4) / 1000
+
     tw_metrics['tw_followers_count'] = tw_followers_count
     tw_metrics['tw_tweets'] = tw_tweets
-    tw_metrics['tw_health'] = tw_health
 
     #If (Klout True Reach / TW Followers) is less than 0.1,
     # set it to (TW followers * 0.10); this makes Klout True Reach equivalent to 10% of the follower base
@@ -69,6 +65,12 @@ def cal_tw_hm(twitter_id, tw_followers_count, tw_tweets):
         tw_metrics['engagement'] = 0.1
     if float(tw_metrics['influence']) == 0:
         tw_metrics['influence'] = 0.1
+
+    tw_health = (((float(tw_followers_count) ** 0.9) * ((float(tw_tweets) / 2) ** 0.2) * (
+        float(tw_metrics['impact']) ** 0.3) * (float(tw_metrics['engagement']) ** 0.2) * (
+        float(tw_metrics['influence']) ** 0.3) * (
+        float(tw_metrics['retweeted']) ** 0.4) * (float(tw_metrics['klout_truereach']) ** 0.3)) ** 0.4) / 1000
+    tw_metrics['tw_health'] = tw_health
 
     return tw_metrics
 
