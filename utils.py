@@ -205,6 +205,3 @@ def getMaxCheckins(company_name, db_filename):
         c.close()
         conn.close()
     return max_checkins
-
-a=getMaxCheckins('Wal-Mart', 'data/Big_company.db')
-print a
