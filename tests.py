@@ -148,7 +148,7 @@ class ScraperTest(unittest.TestCase):
         file = open('testdata/good_format.csv', 'rb')
         company_list = s.read_csv(file)
         self.assertTrue(len(company_list) > 0)
-        list = s.get_social_media(company_list[0:1])
+        list = s.get_social_media(company_list[0:1], 'testdata/data.db')
         self.assertEqual(1, len(list))
         c = list[0]
         self.assertTrue('Wal-Mart Stores', c.company_name)
@@ -157,7 +157,7 @@ class ScraperTest(unittest.TestCase):
         file = open('data/NRN_RestaurantList.csv', 'rb')
         company_list = s.read_csv(file)
         self.assertTrue(len(company_list) > 0)
-        list = s.get_social_media(company_list[0:1])
+        list = s.get_social_media(company_list[0:1], 'testdata/data.db')
         self.assertEqual(1, len(list))
         c = list[0]
         #self.assertTrue('Wal-Mart Stores', c.company_name)

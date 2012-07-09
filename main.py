@@ -12,7 +12,7 @@ from pyloginfb import fblogin
 import calculator
 import simple_twitter_api
 from progress_bar import ProgressBar
-from utils import handleFBData
+from utils import handleFBData, getMaxCheckins
 
 class CompanyURL(object):
     def __init__(self, company_name, fb_url, tw_url, yt_url):
@@ -128,7 +128,7 @@ class Scraper(object):
         #print company_list
         return company_list
 
-    def get_social_media(self, company_list):
+    def get_social_media(self, company_list, db_filename):
         """
             Call scraper to get company social media data
 
@@ -180,6 +180,9 @@ class Scraper(object):
             # If can not get fb data from html, just try to get it from graph api
             if fb_data['likes'] == 0 and fb_data['talking_about_count'] == 0 and fb_data['checkins'] == 0:
                 fb_data = scraper.fb_scrape(company.fb_url)
+                # Get max checkins from previous records
+                fb_data['checkins']=getMaxCheckins(company.company_name, db_filename)
+
             fb_data = handleFBData(fb_data)
 
             #tw_data = scraper.tw_scrape(company.tw_url)
@@ -329,7 +332,7 @@ if __name__ == '__main__':
         file = open(args[1], 'r')
         fblogin()
         s = Scraper()
-        count = s.write_db(s.get_social_media(s.read_csv(file)), 'data/data.db')
+        count = s.write_db(s.get_social_media(s.read_csv(file), 'data/data.db'), 'data/data.db')
         print '\n'
         print '%d records has been saved to database %s' % (count, 'data/data.db')
     else:

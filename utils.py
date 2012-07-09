@@ -36,7 +36,7 @@ class ScrapeThread(threading.Thread):
 
     def run(self):
         f = open(self.csv_file_path, 'rb')
-        self.scraper.write_db(self.scraper.get_social_media(self.scraper.read_csv(f, close=True)),self.db_file_path)
+        self.scraper.write_db(self.scraper.get_social_media(self.scraper.read_csv(f, close=True),self.db_file_path),self.db_file_path)
 
 
 def do_scrape_async(scraper, csv_file_path, db_file_path):
@@ -195,3 +195,16 @@ def handleFBData(fb_data):
         fb_data['checkins'] = int(math.ceil(float(fb_data['likes']) * 0.0123))
     return fb_data
 
+def getMaxCheckins(company_name, db_filename):
+    max_checkins = 0
+    if company_name and db_filename:
+        conn = sqlite3.connect(db_filename)
+        c = conn.cursor()
+        result = c.execute('SELECT MAX(FB_CHECKINS) FROM COMPANY WHERE COMPANY_NAME =?',(company_name, )).fetchone()
+        max_checkins = result[0] or 0
+        c.close()
+        conn.close()
+    return max_checkins
+
+a=getMaxCheckins('Wal-Mart', 'data/Big_company.db')
+print a

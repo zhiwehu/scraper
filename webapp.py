@@ -97,7 +97,7 @@ def csv_delete(csv_file_name):
     try:
         conn = sqlite3.connect('data/setting.db')
         c = conn.cursor()
-        c.execute("DELETE FROM CSV_DB WHERE CSV_FILE_NAME = ?", (csv_file_name, )).fetchall()
+        c.execute("DELETE FROM CSV_DB WHERE CSV_FILE_NAME = ?", (csv_file_name, ))
         conn.commit()
         c.close()
         conn.close()
