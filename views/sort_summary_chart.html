@@ -101,7 +101,7 @@
                 option.series[1].data.push(parseFloat(tw_abs));
                 option.series[2].data.push(parseFloat(yt_abs));
             });
-            option.chart.height = option.series[2].data.length*15;
+            option.chart.height = option.xAxis.categories.length*15;
             var chart = new Highcharts.Chart(option);
         })
     </script>
