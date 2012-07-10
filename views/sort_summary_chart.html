@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block main %}
+    <form id="form" action="/sort_summary_chart" class="form-search well">
+        <select id="csv_file_name" name="csv_file_name">
+            {% if csv_file_list %}
+                {% for csv in csv_file_list %}
+                    <option  {% if csv_file_name == csv %} selected="selected" {% endif %}
+                                                           value="{{ csv }}">{{ csv }}</option>
+                {% endfor %}
+            {% endif %}
+        </select>
+    </form>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>Company Name</th>
+            <th>FB (abs)</th>
+            <th>TW (abs)</th>
+            <th>YT (abs)</th>
+            <th>TSSH PwrReduced</th>
+            <th>Taken time</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if items %}
+            {% for item in items %}
+                <tr>
+                    <td class="company_name">{{ item[0] }}</td>
+                    <td class="fb_abs">{{ item[1]|round(2) }}</td>
+                    <td class="tw_abs">{{ item[2]|round(2) }}</td>
+                    <td class="yt_abs">{{ item[3]|round(2) }}</td>
+                    <td class="tssh_data">{{ item[4]|round(2) }}</td>
+                    <td class="time_taken">{{ item[5] }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="3">No data</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+    <div id="company_chart" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+{% endblock %}
+
+{% block ext_script %}
+    <script type="text/javascript">
+        $(function () {
+            $("#csv_file_name").change(function () {
+                $("#form").submit();
+            });
+
+            var option = ({
+                chart: {
+                    renderTo: 'company_chart',
+                    type: 'bar'
+                },
+                title: {
+                    text: 'Company Summary Chart'
+                },
+                xAxis: {
+                    categories: []
+                },
+                yAxis: {
+                    min: 0
+                },
+                legend: {
+                    backgroundColor: '#FFFFFF',
+                    reversed: true
+                },
+                tooltip: {
+                    formatter: function() {
+                        return ''+
+                                this.series.name +': '+ this.y +'';
+                    }
+                },
+                plotOptions: {
+                    series: {
+                        stacking: 'normal'
+                    }
+                },
+                series: []
+            });
+
+            $('.company_name').each(function () {
+                option.xAxis.categories.push(this.innerHTML);
+                option.series.push({name:this.innerHTML});
+            });
+            var chart = new Highcharts.Chart(option);
+        })
+    </script>
+{% endblock %}

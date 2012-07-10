@@ -336,6 +336,35 @@ def re_scrape_schedule():
     cron.reSchedule(seconds=schedule_interval)
     return settings(success_message='The cron job has been started in background and rescheduled.')
 
+@route('/sort_summary_chart')
+@view('sort_summary_chart')
+def sort_summary_chart(error_message=None, success_message=None):
+    csv_file_list, csv_file_name = get_csv_data(request)
+    db_file_path = get_db_path(csv_file_name)
+
+    if db_file_path:
+        conn = sqlite3.connect(db_file_path)
+        create_company_table(db_file_path)
+        c = conn.cursor()
+
+        items = c.execute('''
+        SELECT COMPANY_NAME, FB_ABS*10, TW_ABS*10, YT_ABS*10, TSSH_PWR_REDUCED*10, strftime('%Y-%m-%d %H:%M', TIME_TAKEN)
+        FROM COMPANY
+        WHERE TIME_TAKEN IN (
+        SELECT MAX(TIME_TAKEN) FROM COMPANY
+        )
+        ORDER BY TSSH_PWR_REDUCED DESC
+        ''').fetchall()
+
+        c.close()
+        conn.close()
+    return dict(
+        items=items,
+        error_message=error_message,
+        success_message=success_message,
+        csv_file_list=csv_file_list,
+        csv_file_name=csv_file_name)
+
 # Call cron.reSchedule to schedule the job with default interval(86400, 1 day) when start the webapp
 import cron
 
