@@ -16,7 +16,7 @@
         <thead>
         <tr>
             <th>Company Name</th>
-            <th>TSSH PwrReduced list</th>
+            <th>TSSH PwrReduced in 30 days</th>
             <th>Latest TSSH PwrReduced</th>
             <th>Begin Taken time</th>
             <th>End Taken time</th>
@@ -33,7 +33,7 @@
                             {{ item.company_name }}
                         </a>
                     </td>
-                    <td><span class="inlinebar">{{ item.spark_data }}</span></td>
+                    <td><span class="inlinebar">{{ item.spark_data|replace('[', '')|replace(']', '') }}</span></td>
                     <td>{{ item.spark_data[-1] }}</td>
                     <td>{{ item.begin_time }}</td>
                     <td>{{ item.end_time }}</td>
@@ -66,7 +66,9 @@
                 $("#form").submit();
             });
 
-            $('.inlinebar').sparkline('html');
+            $('.inlinebar').sparkline('html', {
+                type: 'line',
+                fillColor: undefined});
         })
     </script>
 {% endblock %}
