@@ -394,7 +394,8 @@ def company_spark_chart(error_message=None, success_message=None):
                 )
                 company_dict[company_name] = csc
             csc = company_dict.get(company_name)
-            csc.spark_data.append(item[1])
+            csc.spark_data.append("%.2f" % item[1])
+            print csc.spark_data
             if csc.begin_time > item[2]:
                 csc.begin_time = item[2]
             if csc.end_time < item[2]:
