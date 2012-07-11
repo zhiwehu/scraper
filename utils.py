@@ -205,3 +205,10 @@ def getMaxCheckins(company_name, db_filename):
         c.close()
         conn.close()
     return max_checkins
+
+class CompanySparkChart(object):
+    def __init__(self, company_name, spark_data, begin_time, end_time):
+        self.company_name = company_name
+        self.spark_data = spark_data
+        self.begin_time = begin_time
+        self.end_time = end_time

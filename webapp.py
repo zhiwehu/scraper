@@ -365,6 +365,50 @@ def sort_summary_chart(error_message=None, success_message=None):
         csv_file_list=csv_file_list,
         csv_file_name=csv_file_name)
 
+@route('/company_spark_chart')
+@view('company_spark_chart')
+def company_spark_chart(error_message=None, success_message=None):
+    csv_file_list, csv_file_name = get_csv_data(request)
+    db_file_path = get_db_path(csv_file_name)
+
+    company_dict = {}
+    if db_file_path:
+        conn = sqlite3.connect(db_file_path)
+        create_company_table(db_file_path)
+        c = conn.cursor()
+
+        items = c.execute('''
+        SELECT COMPANY_NAME, TSSH_PWR_REDUCED*10, strftime('%Y-%m-%d %H:%M', TIME_TAKEN)
+        FROM COMPANY
+        WHERE TIME_TAKEN > DATETIME('now', '-30 days')
+        ''').fetchall()
+
+        for item in items:
+            company_name = item[0]
+            if not company_dict.has_key(company_name):
+                csc = CompanySparkChart(
+                    company_name=item[0],
+                    spark_data = [],
+                    begin_time = item[2],
+                    end_time=item[2]
+                )
+                company_dict[company_name] = csc
+            csc = company_dict.get(company_name)
+            csc.spark_data.append(item[1])
+            if csc.begin_time > item[2]:
+                csc.begin_time = item[2]
+            if csc.end_time < item[2]:
+                csc.end_time = item[2]
+
+        c.close()
+        conn.close()
+    return dict(
+        items=company_dict.values(),
+        error_message=error_message,
+        success_message=success_message,
+        csv_file_list=csv_file_list,
+        csv_file_name=csv_file_name)
+
 # Call cron.reSchedule to schedule the job with default interval(86400, 1 day) when start the webapp
 import cron
 
