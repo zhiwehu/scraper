@@ -381,6 +381,7 @@ def company_spark_chart(error_message=None, success_message=None):
         SELECT COMPANY_NAME, TSSH_PWR_REDUCED*10, strftime('%Y-%m-%d %H:%M', TIME_TAKEN)
         FROM COMPANY
         WHERE TIME_TAKEN > DATETIME('now', '-30 days')
+        ORDER BY TIME_TAKEN
         ''').fetchall()
 
         for item in items:
@@ -395,7 +396,6 @@ def company_spark_chart(error_message=None, success_message=None):
                 company_dict[company_name] = csc
             csc = company_dict.get(company_name)
             csc.spark_data.append(round(item[1], 2))
-            print csc.spark_data
             if csc.begin_time > item[2]:
                 csc.begin_time = item[2]
             if csc.end_time < item[2]:
@@ -403,8 +403,11 @@ def company_spark_chart(error_message=None, success_message=None):
 
         c.close()
         conn.close()
+
+        items = company_dict.values()
+        items.sort(key=lambda x: x.spark_data[-1], reverse=True)
     return dict(
-        items=company_dict.values(),
+        items=items,
         error_message=error_message,
         success_message=success_message,
         csv_file_list=csv_file_list,
