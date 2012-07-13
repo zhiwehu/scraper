@@ -106,11 +106,10 @@
             });
 
             $("#data_table tr:gt(0)").each(function() {
-                var company_name = $(this).find("td.company_name").html();
+                var company_name = $(this).find("td.company_name").text();
                 var fb_abs = $(this).find("td.fb_abs").html();
                 var tw_abs = $(this).find("td.tw_abs").html();
                 var yt_abs = $(this).find("td.yt_abs").html();
-                //var tssh_data = $(this).find("td.tssh_data").html();
                 option.xAxis.categories.push(company_name);
                 option.series[0].data.push(parseFloat(fb_abs));
                 option.series[1].data.push(parseFloat(tw_abs));
