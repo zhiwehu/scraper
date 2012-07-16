@@ -206,6 +206,28 @@ def getMaxCheckins(company_name, db_filename):
         conn.close()
     return max_checkins
 
+def getMaxLikes(company_name, db_filename):
+    max_likes = 0
+    if company_name and db_filename:
+        conn = sqlite3.connect(db_filename)
+        c = conn.cursor()
+        result = c.execute('SELECT MAX(FB_LIKES) FROM COMPANY WHERE COMPANY_NAME =?',(company_name, )).fetchone()
+        max_likes = result[0] or 0
+        c.close()
+        conn.close()
+    return max_likes
+
+def getMaxTalkingAboutCount(company_name, db_filename):
+    max_talking_about_count = 0
+    if company_name and db_filename:
+        conn = sqlite3.connect(db_filename)
+        c = conn.cursor()
+        result = c.execute('SELECT MAX(FB_TALKING_ABOUT_COUNT) FROM COMPANY WHERE COMPANY_NAME =?',(company_name, )).fetchone()
+        max_talking_about_count = result[0] or 0
+        c.close()
+        conn.close()
+    return max_talking_about_count
+
 class CompanySparkChart(object):
     def __init__(self, company_name, spark_data, begin_time, end_time):
         self.company_name = company_name

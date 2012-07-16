@@ -25,7 +25,7 @@
 
         <div class="btn-toolbar">
             <div class="btn-group">
-                <a class="btn btn-success btn-large" href="/"><i class="icon-home icon-white"></i> Home</a>
+                <a class="btn btn-success btn-large" href="/?csv_file_name={{ csv_file_name }}"><i class="icon-home icon-white"></i> Home</a>
             </div>
             <div class="btn-group">
                 <a class="btn btn-success btn-large" href="/csv/upload"><i class="icon-file icon-white"></i> Upload</a>
@@ -36,10 +36,10 @@
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a href="/company_chart">Company chart</a></li>
-                    <li><a href="/macro_level_chart">Macro-level chart</a></li>
-                    <li><a href="/sort_summary_chart">Company summary chart</a></li>
-                    <li><a href="/company_spark_chart">Company spark chart</a></li>
+                    <li><a href="/company_chart?csv_file_name={{ csv_file_name }}">Company chart</a></li>
+                    <li><a href="/macro_level_chart?csv_file_name={{ csv_file_name }}">Macro-level chart</a></li>
+                    <li><a href="/sort_summary_chart?csv_file_name={{ csv_file_name }}">Company summary chart</a></li>
+                    <li><a href="/company_spark_chart?csv_file_name={{ csv_file_name }}">Company spark chart</a></li>
                 </ul>
             </div>
 

@@ -12,7 +12,7 @@ from pyloginfb import fblogin
 import calculator
 import simple_twitter_api
 from progress_bar import ProgressBar
-from utils import handleFBData, getMaxCheckins
+from utils import handleFBData, getMaxCheckins, getMaxLikes, getMaxTalkingAboutCount
 
 class CompanyURL(object):
     def __init__(self, company_name, fb_url, tw_url, yt_url):
@@ -182,6 +182,10 @@ class Scraper(object):
                 fb_data = scraper.fb_scrape(company.fb_url)
                 # Get max checkins from previous records
                 fb_data['checkins']=getMaxCheckins(company.company_name, db_filename)
+                if fb_data['likes'] == 0:
+                    fb_data['likes'] = getMaxLikes(company.company_name, db_filename)
+                if fb_data['talking_about_count'] == 0:
+                    fb_data['talking_about_count'] = getMaxTalkingAboutCount(company.company_name, db_filename)
 
             fb_data = handleFBData(fb_data)
 

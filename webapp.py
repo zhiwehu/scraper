@@ -17,6 +17,7 @@ WEB_ROOT = os.path.abspath(os.path.dirname(__file__))
 def send_static(filename):
     return static_file(filename, root=os.path.join(WEB_ROOT, 'static'))
 
+
 @route('/')
 @view('index')
 def index(error_message=None, success_message=None):
@@ -37,19 +38,43 @@ def index(error_message=None, success_message=None):
         for company in companies:
             company_list.append(company[0])
 
-        if (company_name == None or company_name == '') and len(company_list)>0:
+        if (company_name == None or company_name == '') and len(company_list) > 0:
             company_name = company_list[0]
 
         if company_name:
-            items = c.execute('SELECT * FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC',
+            items = c.execute('''SELECT
+            COMPANY_NAME,
+                 FB_LIKES ,
+                 FB_TALKING_ABOUT_COUNT ,
+                 FB_CHECKINS ,
+                 FB_TL ,
+                 FB_CHL ,
+                 FB_COMBINED ,
+                 FB_LIKES_SQRT ,
+                 FB_TCHK_SQRT ,
+                 FB_HEALTH ,
+                 TW_FOLLOWERS_COUNT ,
+                 TW_TWEETS ,
+                 TW_IMPACT ,
+                 TW_ENGAGEMENT ,
+                 TW_INFLUENCE ,
+                 TW_RETWEETED ,
+                 TW_KLOUT_TRUEREACH ,
+                 TW_HEALTH ,
+                 YT_SUBSCRIBER_COUNT ,
+                 YT_VIEW_COUNT ,
+                 YT_HEALTH ,
+                 TSSH_RAW ,
+                 TSSH_PWR_REDUCED*10 ,
+                 FB_PERCENT ,
+                 TW_PERCENT ,
+                 YT_PERCENT ,
+                 FB_ABS*10 ,
+                 TW_ABS*10 ,
+                 YT_ABS*10 ,
+                 strftime('%Y-%m-%d %H:%M:%S', TIME_TAKEN)
+            FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC''',
                 (company_name, )).fetchall()
-        '''
-        if company_name and company_name != 'ALL':
-            items = c.execute('SELECT * FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC',
-                (company_name, )).fetchall()
-        else:
-            items = c.execute('SELECT * FROM COMPANY ORDER BY TIME_TAKEN ASC').fetchall()
-        '''
         c.close()
         conn.close()
     return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
@@ -70,21 +95,24 @@ def csv_upload(success_message=None, error_message=None):
                  LAST_MODIFIED_TIME TIMESTAMP
                  )''')
 
-    csv_db_list = c.execute("SELECT CSV_FILE_NAME, CSV_FILE_PATH, DB_FILE_NAME, DB_FILE_PATH, strftime('%Y-%m-%d %H:%M:%S', LAST_MODIFIED_TIME)  FROM CSV_DB").fetchall()
+    csv_db_list = c.execute(
+        "SELECT CSV_FILE_NAME, CSV_FILE_PATH, DB_FILE_NAME, DB_FILE_PATH, strftime('%Y-%m-%d %H:%M:%S', LAST_MODIFIED_TIME)  FROM CSV_DB").fetchall()
     c.close()
     conn.close()
-    return dict(error_message=error_message, success_message= success_message, csv_db_list = csv_db_list)
+    return dict(error_message=error_message, success_message=success_message, csv_db_list=csv_db_list)
+
 
 @route('/csv/download/<csv_file_name>')
 def csv_download(csv_file_name):
     try:
         f = open('data/%s.csv' % csv_file_name, 'rb')
-        response.content_type= 'text/csv'
+        response.content_type = 'text/csv'
         response['Content-Disposition'] = 'attachment; filename=%s.csv' % csv_file_name
         return f
     except Exception as e:
         log.error(e)
         return HTTPError(code=404)
+
 
 @route('/csv/delete/<csv_file_name>')
 def csv_delete(csv_file_name):
@@ -107,6 +135,7 @@ def csv_delete(csv_file_name):
         pass
 
     return csv_upload(success_message='CSV file %s has been deleted success.' % csv_file_name)
+
 
 @route('/csv/upload', method='POST')
 @view('upload')
@@ -145,6 +174,7 @@ def settings(error_message=None, success_message=None):
     setting = get_setting()
     return dict(setting=setting, error_message=error_message, success_message=success_message)
 
+
 @route('/settings', method='POST')
 @view('settings')
 def do_settings():
@@ -166,6 +196,7 @@ def do_settings():
         return settings(error_message=e.message)
     return settings(success_message='Settings has been updated!')
 
+
 @route('/company_chart')
 @view('company_chart')
 def company_chart(error_message=None, success_message=None):
@@ -184,31 +215,32 @@ def company_chart(error_message=None, success_message=None):
         for company in companies:
             company_list.append(company[0])
 
-        if (company_name == None or company_name == '') and len(company_list)>0:
+        if (company_name == None or company_name == '') and len(company_list) > 0:
             company_name = company_list[0]
 
         if company_name:
             items = c.execute(
-                "SELECT TSSH_PWR_REDUCED, strftime('%Y-%m-%d %H:%M', TIME_TAKEN) FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC"
+                "SELECT TSSH_PWR_REDUCED*10, strftime('%Y-%m-%d %H:%M', TIME_TAKEN) FROM COMPANY WHERE COMPANY_NAME = ? ORDER BY TIME_TAKEN ASC"
                 , (company_name,)).fetchall()
         c.close()
         conn.close()
     return dict(items=items, error_message=error_message, success_message=success_message, companies=company_list,
         company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name)
 
+
 @route('/macro_level_chart', method='GET')
 @view('macro_level_chart')
 def macro_level_chart(error_message=None, success_message=None):
     return do_macro_level_chart(error_message, success_message)
 
+
 @route('/macro_level_chart', method='POST')
 @view('macro_level_chart')
 def do_macro_level_chart(error_message=None, success_message=None):
-    selected_company_list =  request.forms.getlist('company')
+    selected_company_list = request.forms.getlist('company')
     csv_file_list, csv_file_name = get_csv_data(request)
 
     db_file_path = get_db_path(csv_file_name)
-    items = None
     company_list = None
     company_name = None
     if db_file_path:
@@ -225,14 +257,16 @@ def do_macro_level_chart(error_message=None, success_message=None):
         if not selected_company_list:
             selected_company_list = company_list
 
-        sql="SELECT AVG(TSSH_PWR_REDUCED), strftime('%Y-%m-%d %H:%M', TIME_TAKEN) FROM COMPANY WHERE COMPANY_NAME IN ({company_list}) GROUP BY strftime('%Y-%m-%d %H:%M', TIME_TAKEN)".format(
-            company_list=','.join(['?']*len(selected_company_list)))
+        sql = "SELECT AVG(TSSH_PWR_REDUCED)*10, strftime('%Y-%m-%d %H:%M', TIME_TAKEN) FROM COMPANY WHERE COMPANY_NAME IN ({company_list}) GROUP BY strftime('%Y-%m-%d %H:%M', TIME_TAKEN)".format(
+            company_list=','.join(['?'] * len(selected_company_list)))
         avg_company_data = c.execute(sql, selected_company_list).fetchall()
 
         c.close()
         conn.close()
     return dict(error_message=error_message, success_message=success_message, companies=company_list,
-        company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name, avg_company_data= avg_company_data, selected_company_list= selected_company_list)
+        company_name=company_name, csv_file_list=csv_file_list, csv_file_name=csv_file_name,
+        avg_company_data=avg_company_data, selected_company_list=selected_company_list)
+
 
 @route('/export')
 @view('export')
@@ -284,7 +318,7 @@ def export():
                         'TIME_TAKEN'])
         write.writerows(companies)
 
-        response.content_type= 'text/csv'
+        response.content_type = 'text/csv'
         response['Content-Disposition'] = 'attachment; filename=%s_db.csv' % csv_file_name
         f = open('data/%s.csv' % unique_filename, 'rb')
         os.remove('data/%s.csv' % unique_filename)
@@ -301,14 +335,17 @@ def export():
                      LAST_MODIFIED_TIME TIMESTAMP
                      )''')
 
-        csv_db_list = c.execute("SELECT CSV_FILE_NAME, DB_FILE_NAME, DB_FILE_PATH, strftime('%Y-%m-%d %H:%M:%S', LAST_MODIFIED_TIME)  FROM CSV_DB").fetchall()
+        csv_db_list = c.execute(
+            "SELECT CSV_FILE_NAME, DB_FILE_NAME, DB_FILE_PATH, strftime('%Y-%m-%d %H:%M:%S', LAST_MODIFIED_TIME)  FROM CSV_DB").fetchall()
         c.close()
         conn.close()
-        return dict(csv_db_list = csv_db_list)
+        return dict(csv_db_list=csv_db_list)
+
 
 @error(404)
 def error404(error):
     return '404 Not found.'
+
 
 @route('/rescrape')
 def re_scrape_schedule():
@@ -328,13 +365,14 @@ def re_scrape_schedule():
 
     for item in csv_db_file_list:
         csv_path = item[0]
-        db_path  = item[1]
+        db_path = item[1]
         s = Scraper()
-        thread = ScrapeThread(s,csv_path, db_path)
+        thread = ScrapeThread(s, csv_path, db_path)
         thread.start()
-    # Re schedule with new interval seconds
+        # Re schedule with new interval seconds
     cron.reSchedule(seconds=schedule_interval)
     return settings(success_message='The cron job has been started in background and rescheduled.')
+
 
 @route('/sort_summary_chart')
 @view('sort_summary_chart')
@@ -365,6 +403,7 @@ def sort_summary_chart(error_message=None, success_message=None):
         csv_file_list=csv_file_list,
         csv_file_name=csv_file_name)
 
+
 @route('/company_spark_chart')
 @view('company_spark_chart')
 def company_spark_chart(error_message=None, success_message=None):
@@ -389,8 +428,8 @@ def company_spark_chart(error_message=None, success_message=None):
             if not company_dict.has_key(company_name):
                 csc = CompanySparkChart(
                     company_name=item[0],
-                    spark_data = [],
-                    begin_time = item[2],
+                    spark_data=[],
+                    begin_time=item[2],
                     end_time=item[2]
                 )
                 company_dict[company_name] = csc
